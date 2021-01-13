@@ -1,6 +1,6 @@
 # near-linear-function-space
 
-A C++ library for template / compile time *higher order functions*, oriented around generic functional programming.
+A C++17 library for template / compile time *higher order functions*, oriented around generic functional programming.
 The library is self-contained, in the sense that it does not use the standard namespace (*std::*).
 
 Also included within are modules for the one cycle list inductor paradigm. A one cycle list inductor is an operator
