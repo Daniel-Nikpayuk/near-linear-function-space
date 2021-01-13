@@ -1,6 +1,6 @@
 /************************************************************************************************************************
 **
-** Copyright 2020-2021 Daniel Nikpayuk, Inuit Nunangat, The Inuit Nation
+** Copyright 2021 Daniel Nikpayuk, Inuit Nunangat, The Inuit Nation
 **
 ** This file is part of near_linear_function_space.
 **
