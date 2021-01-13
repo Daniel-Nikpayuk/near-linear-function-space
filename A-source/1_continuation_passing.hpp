@@ -65,21 +65,57 @@ namespace ocli_1
 /***********************************************************************************************************************/
 
 	template<auto f, auto = _na_> using S_is_a_function			= S_boolean<V_is_function_V<f>>;
-	template<auto f, auto = _na_> using S_out_type_equals_void		= S_equal_TxT<f_out_type<f>, void>;
-	template<auto f, auto = _na_> using S_in_type_equals_void		= S_equal_TxT<f_in_type<f>, void>;
-	template<auto f, auto = _na_> using S_is_unary				= S_boolean<V_is_unary_V<f>>;
-	template<auto f, auto = _na_> using S_is_binary				= S_boolean<V_is_binary_V<f>>;
-
 	template<auto f, auto = _na_> using S_not_a_function			= S_boolean<!V_is_function_V<f>>;
+
+	template<auto f, auto  > using S_left_is_a_function			= S_is_a_function<f>;
+	template<auto  , auto g> using S_right_is_a_function			= S_is_a_function<g>;
+
+	template<auto f, auto  > using S_left_not_a_function			= S_not_a_function<f>;
+	template<auto  , auto g> using S_right_not_a_function			= S_not_a_function<g>;
+
+	//
+
+	template<auto f, auto = _na_> using S_out_type_equals_void		= S_equal_TxT<f_out_type<f>, void>;
+
+	template<auto f, auto  > using S_left_out_type_equals_void		= S_out_type_equals_void<f>;
+	template<auto  , auto g> using S_right_out_type_equals_void		= S_out_type_equals_void<g>;
+
+	//
+
+	template<auto f, auto = _na_> using S_in_type_equals_void		= S_boolean<V_is_nullary_V<f>>;
+	template<auto f, auto = _na_> using S_is_nullary			= S_boolean<V_is_nullary_V<f>>;
+	template<auto f, auto = _na_> using S_not_nullary			= S_boolean<!V_is_nullary_V<f>>;
+
+	template<auto f, auto  > using S_left_in_type_equals_void		= S_in_type_equals_void<f>;
+	template<auto  , auto g> using S_right_in_type_equals_void		= S_in_type_equals_void<g>;
+
+	template<auto f, auto  > using S_left_is_nullary			= S_is_nullary<f>;
+	template<auto  , auto g> using S_right_is_nullary			= S_is_nullary<g>;
+
+	template<auto f, auto  > using S_left_not_nullary			= S_not_nullary<f>;
+	template<auto  , auto g> using S_right_not_nullary			= S_not_nullary<g>;
+
+	//
+
+	template<auto f, auto = _na_> using S_is_unary				= S_boolean<V_is_unary_V<f>>;
 	template<auto f, auto = _na_> using S_not_unary				= S_boolean<!V_is_unary_V<f>>;
+
+	template<auto f, auto  > using S_left_is_unary				= S_is_unary<f>;
+	template<auto  , auto g> using S_right_is_unary				= S_is_unary<g>;
+
+	template<auto f, auto  > using S_left_not_unary				= S_not_unary<f>;
+	template<auto  , auto g> using S_right_not_unary			= S_not_unary<g>;
+
+	//
+
+	template<auto f, auto = _na_> using S_is_binary				= S_boolean<V_is_binary_V<f>>;
 	template<auto f, auto = _na_> using S_not_binary			= S_boolean<!V_is_binary_V<f>>;
 
-/***********************************************************************************************************************/
+	template<auto f, auto  > using S_left_is_binary				= S_is_binary<f>;
+	template<auto  , auto g> using S_right_is_binary			= S_is_binary<g>;
 
-	template<auto f, auto g> using S_is_nullary_nullary	= S_boolean<V_is_nullary_V<f> && V_is_nullary_V<g>>;
-	template<auto f, auto g> using S_is_unary_nullary	= S_boolean<V_is_unary_V<f> && V_is_nullary_V<g>>;
-	template<auto f, auto g> using S_is_nullary_unary	= S_boolean<V_is_nullary_V<f> && V_is_unary_V<g>>;
-	template<auto f, auto g> using S_is_unary_unary		= S_boolean<V_is_unary_V<f> && V_is_unary_V<g>>;
+	template<auto f, auto  > using S_left_not_binary			= S_not_binary<f>;
+	template<auto  , auto g> using S_right_not_binary			= S_not_binary<g>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -108,10 +144,26 @@ namespace ocli_1
 
 	constexpr void _id_()							{ }	// (identity)
 
+	//
+
+	template<auto = _na_, auto = _na_> using return_id_keyword		= S_value_V<_id_>;
+
+/***********************************************************************************************************************/
+
+	template<auto f> constexpr bool V_is_id_keyword				= V_equal_VxV<f, _id_>;
+	template<auto f, auto = _na_> using S_is_id_keyword			= S_equal_VxV<f, _id_>;
+
+	template<auto f, auto  > using S_left_is_id_keyword			= S_is_id_keyword<f>;
+	template<auto  , auto g> using S_right_is_id_keyword			= S_is_id_keyword<g>;
+	template<auto f, auto g> using S_both_are_id_keyword			= S_boolean_and
+	<
+		V_is_id_keyword<f>, V_is_id_keyword<g>
+	>;
+
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// baseline:
+// kernel:
 
 /***********************************************************************************************************************/
 
@@ -121,70 +173,58 @@ namespace ocli_1
 	template<auto f>
 	constexpr auto V_id_cast_V						= id<f_in_type<f>>;
 
-/***********************************************************************************************************************/
+	//
 
-	template<auto = _na_, auto = _na_> using return_id_keyword		= S_value_V<_id_>;
-	template<auto Type, auto = _na_> using return_id_cast			= S_value_V<id<T_type_U<Type>>>;
-
-/***********************************************************************************************************************/
-
-	template<auto f, auto = _na_> using S_is_id_keyword			= S_equal_VxV<f, _id_>;
-
-	template<auto f, auto  > using S_left_is_id_keyword			= S_is_id_keyword<f>;
-	template<auto  , auto g> using S_right_is_id_keyword			= S_is_id_keyword<g>;
-	template<auto f, auto g> using S_both_are_id_keyword			= S_boolean
-	<
-		V_value_S<S_is_id_keyword<f>> &&
-		V_value_S<S_is_id_keyword<g>>
-	>;
+	template<auto Type, auto = _na_> using return_id			= S_value_V<id<T_type_U<Type>>>;
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_equals_id_cast			= S_equal_VxV<f, V_id_cast_V<f>>;
+	template<auto f, auto = _na_> using S_equals_id				= S_equal_VxV<f, V_id_cast_V<f>>;
 
 		// Assumes f is a function
 		// Assumes the out_type of f is not void
 		// Assumes the in_type of f is unary
 
 	template<auto f, auto = _na_>
-	using S_is_id_cast = T_colist_Bs
+	using S_is_id_func = T_colist_Bs
 	<
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
 		S_not_unary,			return_false,
-		otherwise,			S_equals_id_cast
+		otherwise,			S_equals_id
 	>;
 
-	template<auto f, auto  > using S_left_is_id_cast			= S_is_id_cast<f>;
-	template<auto  , auto g> using S_right_is_id_cast			= S_is_id_cast<g>;
-	template<auto f, auto g> using S_both_are_id_cast			= S_boolean
+	template<auto f, auto = _na_> constexpr bool V_is_id_func		= V_value_S<S_is_id_func<f>>;
+
+	template<auto f, auto  > using S_left_is_id_func			= S_is_id_func<f>;
+	template<auto  , auto g> using S_right_is_id_func			= S_is_id_func<g>;
+	template<auto f, auto g> using S_both_are_id_func			= S_boolean_and
 	<
-		V_value_S<S_is_id_cast<f>> &&
-		V_value_S<S_is_id_cast<g>>
+		V_is_id_func<f>, V_is_id_func<g>
 	>;
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_is_id_keyword_or_cast		= S_boolean
+	template<auto f, auto = _na_> using S_is_id_keyword_or_func		= S_boolean_or
 	<
-		V_value_S<S_is_id_keyword<f>> ||
-		V_value_S<S_is_id_cast<f>>
+		V_is_id_keyword<f>, V_is_id_func<f>
 	>;
 
-	template<auto f, auto  > using S_left_is_id_keyword_or_cast		= S_is_id_keyword_or_cast<f>;
-	template<auto  , auto g> using S_right_is_id_keyword_or_cast		= S_is_id_keyword_or_cast<g>;
-	template<auto f, auto g> using S_both_are_id_keyword_or_cast		= S_boolean
+	template<auto f, auto = _na_> constexpr bool V_is_id_keyword_or_func	= V_value_S<S_is_id_keyword_or_func<f>>;
+
+	template<auto f, auto  > using S_left_is_id_keyword_or_func		= S_is_id_keyword_or_func<f>;
+	template<auto  , auto g> using S_right_is_id_keyword_or_func		= S_is_id_keyword_or_func<g>;
+	template<auto f, auto g> using S_both_are_id_keyword_or_func		= S_boolean_and
 	<
-		V_value_S<S_is_id_keyword_or_cast<f>> &&
-		V_value_S<S_is_id_keyword_or_cast<g>>
+		V_is_id_keyword_or_func<f>, V_is_id_keyword_or_func<g>
 	>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// baseline composition:
+// kernel composition:
 
 /***********************************************************************************************************************/
 
@@ -209,17 +249,72 @@ namespace ocli_1
 
 /***********************************************************************************************************************/
 
+	struct left_not_a_func_assertion
+	{
+		template<bool Value>
+		static constexpr int result()
+			{ static_assert(Value, "S_compose: left auto arg is not a function."); return 0; }
+	};
+
+	struct right_not_a_func_assertion
+	{
+		template<bool Value>
+		static constexpr int result()
+			{ static_assert(Value, "S_compose: right auto arg is not a function."); return 0; }
+	};
+
+	struct right_not_unary_assertion
+	{
+		template<bool Value>
+		static constexpr int result()
+			{ static_assert(Value, "S_compose: right auto arg is not a unary function."); return 0; }
+	};
+
+	template<typename Type>
+	using assert_S_compose = T_hold
+	<
+		! V_equal_TxT<Type, left_not_a_func_assertion>	&&
+		! V_equal_TxT<Type, right_not_a_func_assertion>	&&
+		! V_equal_TxT<Type, right_not_unary_assertion>	,
+
+		void, force_static_assert, Type
+	>;
+
+	template<auto, auto> using return_left_not_a_func_assertion		= left_not_a_func_assertion;
+	template<auto, auto> using return_right_not_a_func_assertion		= right_not_a_func_assertion;
+	template<auto, auto> using return_right_not_unary_assertion		= right_not_unary_assertion;
+
+/***********************************************************************************************************************/
+
+	template<auto f, auto g>
+	using return_v_compose = T_colist_Bs
+	<
+		g, _na_,				f, g,
+
+		S_in_type_equals_void,			return_v_compose_v,
+		otherwise,				return_v_compose_t
+	>;
+
+	template<auto f, auto g>
+	using return_compose_v = T_colist_Bs
+	<
+		g, _na_,				f, g,
+
+		otherwise,				return_t_compose_v
+	>;
+
 	template<auto f, auto g>
 	using S_compose = T_colist_Bs
 	<
-		f, g,				f, g,
+		f, g,					f, g,
 
-		S_not_a_function,		return_false,
-		S_is_nullary_nullary,		return_v_compose_v,
-		S_is_nullary_unary,		return_v_compose_t,
-		S_is_unary_nullary,		return_t_compose_v,
-		S_is_unary_unary,		return_t_compose_t,
-		otherwise,			return_false
+		S_left_not_a_function,			return_left_not_a_func_assertion,
+		S_right_not_a_function,			return_right_not_a_func_assertion,
+		S_right_not_unary,			return_right_not_unary_assertion,
+
+		S_left_out_type_equals_void,		return_v_compose,
+		S_right_in_type_equals_void,		return_compose_v,
+		otherwise,				return_t_compose_t
 	>;
 
 	template<auto f, auto g>
@@ -253,8 +348,8 @@ namespace ocli_1
 		S_left_is_id_keyword,		return_right_function,
 		S_right_is_id_keyword,		return_left_function,
 
-		S_left_is_id_cast,		try_compose_but_return_right_function,
-		S_right_is_id_cast,		try_compose_but_return_left_function,
+		S_left_is_id_func,		try_compose_but_return_right_function,
+		S_right_is_id_func,		try_compose_but_return_left_function,
 
 		otherwise,			return_t_compose_t
 	>;
@@ -314,10 +409,10 @@ namespace ocli_1
 /***********************************************************************************************************************/
 
 	template<auto = _na_, auto = _na_> using return_car_keyword		= S_value_V<_car_>;
-	template<auto Type, auto = _na_> using return_car_cast			= S_value_V<car<T_type_U<Type>>>;
+	template<auto Type, auto = _na_> using return_car			= S_value_V<car<T_type_U<Type>>>;
 
 	template<auto = _na_, auto = _na_> using return_cdr_keyword		= S_value_V<_cdr_>;
-	template<auto Type, auto = _na_> using return_cdr_cast			= S_value_V<cdr<T_type_U<Type>>>;
+	template<auto Type, auto = _na_> using return_cdr			= S_value_V<cdr<T_type_U<Type>>>;
 
 /***********************************************************************************************************************/
 
@@ -335,45 +430,45 @@ namespace ocli_1
 
 	//
 
-	template<auto f, auto = _na_> using S_equals_car_cast		= S_equal_VxV<f, V_car_cast_V<f>>;
+	template<auto f, auto = _na_> using S_equals_car		= S_equal_VxV<f, V_car_cast_V<f>>;
 
 		// Assumes f is a function
 		// Assumes the out_type of f is not void
 		// Assumes the in_type of f is binary
 
 	template<auto f, auto = _na_>
-	using S_is_car_cast = T_colist_Bs
+	using S_is_car_func = T_colist_Bs
 	<
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
 		S_not_binary,			return_false,
-		otherwise,			S_equals_car_cast
+		otherwise,			S_equals_car
 	>;
 
-	template<auto f, auto  > using S_left_is_car_cast		= S_is_car_cast<f>;
-	template<auto  , auto g> using S_right_is_car_cast		= S_is_car_cast<g>;
-	template<auto f, auto g> using S_both_are_car_cast		= S_boolean
+	template<auto f, auto  > using S_left_is_car_func		= S_is_car_func<f>;
+	template<auto  , auto g> using S_right_is_car_func		= S_is_car_func<g>;
+	template<auto f, auto g> using S_both_are_car_func		= S_boolean
 									<
-										V_value_S<S_is_car_cast<f>> &&
-										V_value_S<S_is_car_cast<g>>
+										V_value_S<S_is_car_func<f>> &&
+										V_value_S<S_is_car_func<g>>
 									>;
 
 	//
 
-	template<auto f, auto = _na_> using S_is_car_keyword_or_cast	= S_boolean
+	template<auto f, auto = _na_> using S_is_car_keyword_or_func	= S_boolean
 									<
 										V_value_S<S_is_car_keyword<f>> ||
-										V_value_S<S_is_car_cast<f>>
+										V_value_S<S_is_car_func<f>>
 									>;
 
-	template<auto f, auto  > using S_left_is_car_keyword_or_cast	= S_is_car_keyword_or_cast<f>;
-	template<auto  , auto g> using S_right_is_car_keyword_or_cast	= S_is_car_keyword_or_cast<g>;
-	template<auto f, auto g> using S_both_are_car_keyword_or_cast	= S_boolean
+	template<auto f, auto  > using S_left_is_car_keyword_or_func	= S_is_car_keyword_or_func<f>;
+	template<auto  , auto g> using S_right_is_car_keyword_or_func	= S_is_car_keyword_or_func<g>;
+	template<auto f, auto g> using S_both_are_car_keyword_or_func	= S_boolean
 									<
-										V_value_S<S_is_car_keyword_or_cast<f>> &&
-										V_value_S<S_is_car_keyword_or_cast<g>>
+										V_value_S<S_is_car_keyword_or_func<f>> &&
+										V_value_S<S_is_car_keyword_or_func<g>>
 									>;
 
 /***********************************************************************************************************************/
@@ -392,45 +487,45 @@ namespace ocli_1
 
 	//
 
-	template<auto f, auto = _na_> using S_equals_cdr_cast		= S_equal_VxV<f, V_cdr_cast_V<f>>;
+	template<auto f, auto = _na_> using S_equals_cdr		= S_equal_VxV<f, V_cdr_cast_V<f>>;
 
 		// Assumes f is a function
 		// Assumes the out_type of f is not void
 		// Assumes the in_type of f is binary
 
 	template<auto f, auto = _na_>
-	using S_is_cdr_cast = T_colist_Bs
+	using S_is_cdr_func = T_colist_Bs
 	<
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
 		S_not_binary,			return_false,
-		otherwise,			S_equals_cdr_cast
+		otherwise,			S_equals_cdr
 	>;
 
-	template<auto f, auto  > using S_left_is_cdr_cast		= S_is_cdr_cast<f>;
-	template<auto  , auto g> using S_right_is_cdr_cast		= S_is_cdr_cast<g>;
-	template<auto f, auto g> using S_both_are_cdr_cast		= S_boolean
+	template<auto f, auto  > using S_left_is_cdr_func		= S_is_cdr_func<f>;
+	template<auto  , auto g> using S_right_is_cdr_func		= S_is_cdr_func<g>;
+	template<auto f, auto g> using S_both_are_cdr_func		= S_boolean
 									<
-										V_value_S<S_is_cdr_cast<f>> &&
-										V_value_S<S_is_cdr_cast<g>>
+										V_value_S<S_is_cdr_func<f>> &&
+										V_value_S<S_is_cdr_func<g>>
 									>;
 
 	//
 
-	template<auto f, auto = _na_> using S_is_cdr_keyword_or_cast	= S_boolean
+	template<auto f, auto = _na_> using S_is_cdr_keyword_or_func	= S_boolean
 									<
 										V_value_S<S_is_cdr_keyword<f>> ||
-										V_value_S<S_is_cdr_cast<f>>
+										V_value_S<S_is_cdr_func<f>>
 									>;
 
-	template<auto f, auto  > using S_left_is_cdr_keyword_or_cast	= S_is_cdr_keyword_or_cast<f>;
-	template<auto  , auto g> using S_right_is_cdr_keyword_or_cast	= S_is_cdr_keyword_or_cast<g>;
-	template<auto f, auto g> using S_both_are_cdr_keyword_or_cast	= S_boolean
+	template<auto f, auto  > using S_left_is_cdr_keyword_or_func	= S_is_cdr_keyword_or_func<f>;
+	template<auto  , auto g> using S_right_is_cdr_keyword_or_func	= S_is_cdr_keyword_or_func<g>;
+	template<auto f, auto g> using S_both_are_cdr_keyword_or_func	= S_boolean
 									<
-										V_value_S<S_is_cdr_keyword_or_cast<f>> &&
-										V_value_S<S_is_cdr_keyword_or_cast<g>>
+										V_value_S<S_is_cdr_keyword_or_func<f>> &&
+										V_value_S<S_is_cdr_keyword_or_func<g>>
 									>;
 
 /***********************************************************************************************************************/
@@ -463,9 +558,9 @@ namespace ocli_1
 		<
 			g1, g2,					g1, g2,
 
-			S_both_are_id_keyword_or_cast,		return_binary_function,
-			S_left_is_id_keyword_or_cast,		return_curry_compose_right,
-			S_right_is_id_keyword_or_cast,		return_curry_compose_left,
+			S_both_are_id_keyword_or_func,		return_binary_function,
+			S_left_is_id_keyword_or_func,		return_curry_compose_right,
+			S_right_is_id_keyword_or_func,		return_curry_compose_left,
 			otherwise,				return_curry_compose
 		>;
 	};
@@ -492,8 +587,8 @@ namespace ocli_1
 		S_is_car_keyword,		return_left_function,
 		S_is_cdr_keyword,		return_right_function,
 
-		S_is_car_cast,			try_curry_but_dispatch_left_function<f>::template result,
-		S_is_cdr_cast,			try_curry_but_dispatch_right_function<f>::template result,
+		S_is_car_func,			try_curry_but_dispatch_left_function<f>::template result,
+		S_is_cdr_func,			try_curry_but_dispatch_right_function<f>::template result,
 
 		otherwise,			dispatch_curry_composition_opt<f>::template result
 	>;
@@ -521,7 +616,7 @@ namespace ocli_1
 		<
 			composed_f, _na_,		Type, composed_f,
 
-			S_is_id_keyword,		return_id_cast,
+			S_is_id_keyword,		return_id,
 			otherwise,			return_right_function
 		>;
 
@@ -583,7 +678,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -622,7 +717,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -661,7 +756,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -695,7 +790,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -742,7 +837,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -781,7 +876,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -820,7 +915,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -854,7 +949,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -901,7 +996,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -940,7 +1035,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -979,7 +1074,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};
@@ -1012,7 +1107,7 @@ namespace ocli_1
 		<
 			cont_f, _na_,			cont_f, U_type_T<Type>,
 
-			S_is_id_keyword_or_cast,	return_halting,
+			S_is_id_keyword_or_func,	return_halting,
 			otherwise,			return_passing
 		>;
 	};

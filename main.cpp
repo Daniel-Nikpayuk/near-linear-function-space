@@ -85,8 +85,14 @@
 	int plus_two(int x)	{ return x+2; }
 	void print(int x)	{ printf("%d\n", x); }
 
-	auto comp1		= V_compose<square, plus_two>;
-	auto comp2		= V_compose<print, square>;
+	auto comp1		= V_compose		< square   , plus_two >;
+	auto comp2		= V_compose		< print    , square   >;
+
+	using S_comp3		= S_compose		< 5        , plus_two >;	// static assertion failure.
+	using S_comp3		= S_compose		< plus_two , plus_two >;	// static assertion success.
+	using assert1		= assert_S_compose	< S_comp3             >;
+
+	auto comp3		= V_value_S		< S_comp3             >;
 
 /***********************************************************************************************************************/
 
@@ -94,6 +100,7 @@
 	{
 		print(comp1(5));	// prints: 49
 		comp2(7);		// prints: 49
+		print(comp3(11));	// prints: 15
 
 //		print_number(39275);
 

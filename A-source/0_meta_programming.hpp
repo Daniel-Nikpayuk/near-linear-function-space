@@ -60,10 +60,8 @@ namespace ocli_0
 	{
 		static constexpr bool match		= false;
 
-		// (gcc-8) internal compiler error:
-
-	//	static constexpr auto car_value		= Value1;
-	//	static constexpr auto cdr_value		= Value2;
+		static constexpr auto car_value		= Value1;
+		static constexpr auto cdr_value		= Value2;
 	};
 
 	template<auto Value>
@@ -272,8 +270,6 @@ namespace ocli_0
 									T_pointer_T, Type
 								>
 							>;
-
-	constexpr auto U_void				= U_type_T<void>;
 
 	// T_decltype(_type)_T:
 
@@ -703,6 +699,14 @@ namespace ocli_0
 
 /***********************************************************************************************************************/
 
+	template<auto Value1, auto Value2>
+	constexpr bool V_equal_VxV			= value_pair<Value1, Value2>::match;
+
+	template<auto Value1, auto Value2>
+	using S_equal_VxV				= S_boolean<value_pair<Value1, Value2>::match>;
+
+/***********************************************************************************************************************/
+
 	template<typename Type1, typename Type2>
 	constexpr bool V_is_equal_UxU(void(*)(Type1), void(*)(Type2))	// unsafe to use directly,
 		{ return false; }
@@ -727,19 +731,26 @@ namespace ocli_0
 	template<auto TypeMap1, auto TypeMap2>
 	using S_equal_UxU				= S_boolean<V_is_equal_UxU(TypeMap1, TypeMap2)>;
 
-	//
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
 
-	template<auto Type, auto = _na_> using S_equals_void		= S_equal_UxU<Type, U_void>;
-	template<auto Type1, auto Type2> using S_left_equals_void	= S_equal_UxU<Type1, U_void>;
-	template<auto Type1, auto Type2> using S_right_equals_void	= S_equal_UxU<Type2, U_void>;
+// identifiers (convenience aliases):
 
 /***********************************************************************************************************************/
 
-	template<auto Value1, auto Value2>
-	constexpr bool V_equal_VxV			= value_pair<Value1, Value2>::match;
+	constexpr auto U_void							= U_type_T<void>;
+	constexpr auto U_char_ptr						= U_type_T<char*>;
 
-	template<auto Value1, auto Value2>
-	using S_equal_VxV				= S_boolean<value_pair<Value1, Value2>::match>;
+/***********************************************************************************************************************/
+
+	template<auto Type, auto = _na_> using S_equals_void			= S_equal_UxU<Type, U_void>;
+
+	template<auto Type1, auto Type2> using S_left_equals_void		= S_equal_UxU<Type1, U_void>;
+	template<auto Type1, auto Type2> using S_right_equals_void		= S_equal_UxU<Type2, U_void>;
+
+	//
+
+	template<auto Type> constexpr bool V_equals_char_ptr			= V_equal_UxU<Type, U_char_ptr>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -750,7 +761,9 @@ namespace ocli_0
 /***********************************************************************************************************************/
 
 	template<typename e>
-	constexpr bool V_is_type_inference_failure_T	= V_equal_TxT<e, S_ErrMsg::type_inference_failure>;
+	constexpr bool V_is_type_inference_failure_T		= V_equal_TxT<e, S_ErrMsg::type_inference_failure>;
+
+	template<typename Type> using force_static_assert	= S_value_V<Type::template result<false>()>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
