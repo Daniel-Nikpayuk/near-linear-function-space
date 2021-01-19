@@ -44,7 +44,7 @@ namespace nlfs_1
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// generic:
+// (compile-time) generic:
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -142,14 +142,258 @@ namespace nlfs_1
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
+// (run-time) primitives:
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// aliases:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec> using return_type			= typename Spec::return_type;
+	template<typename Spec> using arg_type				= typename Spec::arg_type;
+
+	template<typename Spec> constexpr auto return_cons		= Spec::return_cons;
+	template<typename Spec> constexpr auto lval			= Spec::lval;
+	template<typename Spec> constexpr auto rval			= Spec::rval;
+	template<typename Spec> constexpr auto car_rval			= Spec::car_rval;
+	template<typename Spec> constexpr auto cdr_rval			= Spec::cdr_rval;
+
+	//
+
+	template<typename Spec> using sign_type				= typename Spec::sign_type;
+
+	template<typename Spec> constexpr auto sign_return		= Spec::sign_return;
+	template<typename Spec> constexpr auto sign_facade		= Spec::sign_facade;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// predicates:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_not_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_less_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_less_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_greater_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) > rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_greater_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) >= rval<Spec>(arg));
+	}
+
+	//
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_value(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_not_value(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_less_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_less_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_greater_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_greater_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// constants:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_constant()
+	{
+		return return_cons<Spec>();
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// arithmetic operators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_add(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_subtract(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_multiply(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_divide(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_modulo(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	//
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_add_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_subtract_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_multiply_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_divide_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_modulo_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// comparative operators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_max(arg_type<Spec> arg)
+	{
+		if (lval<Spec>(arg) > rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
+		else					return return_cons<Spec>(rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_min(arg_type<Spec> arg)
+	{
+		if (lval<Spec>(arg) < rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
+		else					return return_cons<Spec>(rval<Spec>(arg));
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// mutators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_assign(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
 // unary:
 
 /***********************************************************************************************************************/
-/***********************************************************************************************************************/
 
 // keywords:
-
-/***********************************************************************************************************************/
 
 	constexpr void _id_()							{ }	// (identity)
 
@@ -537,7 +781,13 @@ namespace nlfs_1
 		g, _na_,				f, g,
 
 		S_is_unary,				return_n_compose_u,
-		S_is_binary,				return_n_compose_b,
+
+	//	S_is_car_keyword,			return_f_car,
+	//	S_is_cdr_keyword,			return_f_cdr,
+	//	S_is_car_func,				try_compose_but_return_f_car,
+	//	S_is_cdr_func,				try_compose_but_return_f_cdr,
+	//	S_is_binary,				return_n_compose_b,
+
 		otherwise,				return_n_compose_n
 	>;
 
@@ -548,9 +798,8 @@ namespace nlfs_1
 
 		S_left_is_id_keyword,		return_right_function,
 		S_right_is_id_keyword,		return_left_function,
-
-		S_left_is_id_func,		try_compose_but_return_right_function,
-		S_right_is_id_func,		try_compose_but_return_left_function,
+	//	S_left_is_id_func,		try_compose_but_return_right_function,
+	//	S_right_is_id_func,		try_compose_but_return_left_function,
 
 		otherwise,			return_u_compose_u
 	>;
@@ -561,7 +810,13 @@ namespace nlfs_1
 		g, _na_,				f, g,
 
 		S_is_unary,				return_u_compose_u_opt,
-		S_is_binary,				return_u_compose_b,
+
+	//	S_is_car_keyword,			return_f_car,
+	//	S_is_cdr_keyword,			return_f_cdr,
+	//	S_is_car_func,				try_compose_but_return_f_car,
+	//	S_is_cdr_func,				try_compose_but_return_f_cdr,
+	//	S_is_binary,				return_u_compose_b,
+
 		otherwise,				return_u_compose_n
 	>;
 

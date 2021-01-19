@@ -45,7 +45,8 @@ namespace nlfs_0
 
 // keywords:
 
-	constexpr void _na_()				{ }	// (not applicable)
+	constexpr void _na_()				{ }	// (not applicable auto)
+	struct _NA_					{ };	// (not applicable typename)
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -79,6 +80,226 @@ namespace nlfs_0
 
 	template<typename ValuePair>
 	constexpr auto V_value_S = ValuePair::value;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// boolean type:
+
+/***********************************************************************************************************************/
+
+	using S_false								= S_value_V<false>;
+	using S_true								= S_value_V<true>;
+
+	template<bool Predicate, auto = _na_> using S_boolean			= S_value_V<Predicate>;
+
+	template<bool Value, auto = _na_> using S_boolean_not			= S_value_V<!Value>;
+	template<bool Value1, bool Value2> using S_boolean_and			= S_value_V<Value1 && Value2>;
+	template<bool Value1, bool Value2> using S_boolean_or			= S_value_V<Value1 || Value2>;
+
+	template<bool Value, auto = _na_> constexpr bool V_boolean_not		= ! Value;
+	template<bool Value1, bool Value2> constexpr bool V_boolean_and		= Value1 && Value2;
+	template<bool Value1, bool Value2> constexpr bool V_boolean_or		= Value1 || Value2;
+
+/***********************************************************************************************************************/
+
+// true:
+
+	template<bool True, auto = _na_>
+	struct pattern_match_bool
+	{
+		// value:
+
+			template<auto Antecedent, auto Consequent>
+			static constexpr auto V_then_else_VxV = Antecedent;
+
+		// type:
+
+			template<typename Antecedent, typename Consequent>
+			using T_then_else_TxT = Antecedent;
+	};
+
+/***********************************************************************************************************************/
+
+// false:
+
+	template<auto NA>
+	struct pattern_match_bool<false, NA>
+	{
+		// value:
+
+			template<auto Antecedent, auto Consequent>
+			static constexpr auto V_then_else_VxV = Consequent;
+
+		// type:
+
+			template<typename Antecedent, typename Consequent>
+			using T_then_else_TxT = Consequent;
+	};
+
+/***********************************************************************************************************************/
+
+// if then else:
+
+	// value:
+
+		template<bool Predicate, auto Antecedent, auto Consequent>
+		constexpr auto V_if_then_else = pattern_match_bool<Predicate>::template
+			V_then_else_VxV<Antecedent, Consequent>;
+
+	// type:
+
+		template<bool Predicate, typename Antecedent, typename Consequent>
+		using T_if_then_else = typename pattern_match_bool<Predicate>::template
+			T_then_else_TxT<Antecedent, Consequent>;
+
+/***********************************************************************************************************************/
+
+// hold:
+
+	struct hold_true
+	{
+		// value:
+
+		// type:
+
+			template<typename Antecedent, template<typename> class Function, typename Consequent>
+			using T_hold_TxGxT = Antecedent;
+	};
+
+	struct hold_false
+	{
+		// value:
+
+		// type:
+
+			template<typename Antecedent, template<typename> class Function, typename Consequent>
+			using T_hold_TxGxT = Function<Consequent>;
+	};
+
+	// value:
+
+	// type:
+
+		template<bool Predicate, typename Antecedent, template<typename> class Function, typename Consequent>
+		using T_hold = typename T_if_then_else
+		<
+			Predicate,
+
+				hold_true, hold_false
+
+		>::template T_hold_TxGxT
+		<
+			Antecedent, Function, Consequent
+		>;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// function type:
+
+/***********************************************************************************************************************/
+
+	template<auto, auto = _na_>
+	struct pattern_match_function
+	{
+		template
+		<
+			template
+			<
+				bool, typename, typename...
+
+			> class Continuation
+		>
+		using induct = Continuation<false, _NA_>;
+	};
+
+	template<typename OutType, typename... InTypes, OutType(*f)(InTypes...), auto NA>
+	struct pattern_match_function<f, NA>
+	{
+		template
+		<
+			template
+			<
+				bool, typename, typename...
+
+			> class Continuation, typename... Args
+		>
+		using induct = Continuation<true, Args..., OutType, InTypes...>;
+	};
+
+/***********************************************************************************************************************/
+
+// match:
+
+	template<bool Match, typename, typename...>
+	using func_match_cont = S_value_V<Match>;
+
+	template<auto Value, auto = _na_>
+	using S_is_function = typename pattern_match_function<Value>::template induct
+	<
+		func_match_cont
+	>;
+
+	template<auto Value> constexpr bool V_is_function = V_value_S<S_is_function<Value>>;
+
+// arity:
+
+	template<bool, typename Type, typename, typename... InTypes>
+	using func_arity_cont = S_value_V<Type(sizeof...(InTypes))>;
+
+	template<auto Value, typename SizeType = unsigned>
+	using S_function_arity = typename pattern_match_function<Value>::template induct
+	<
+		func_arity_cont, SizeType
+	>;
+
+	template<auto Value, typename SizeType = unsigned>
+	constexpr bool V_function_arity = V_value_S<S_function_arity<Value, SizeType>>;
+
+// is (... ; arity):
+
+	template<auto Value> constexpr bool V_is_nullary	= (V_function_arity<Value> == 0);
+	template<auto Value> constexpr bool V_is_unary		= (V_function_arity<Value> == 1);
+	template<auto Value> constexpr bool V_is_binary		= (V_function_arity<Value> == 2);
+
+// out type:
+
+	template<bool, typename OutType, typename...>
+	using func_out_type_cont = OutType;
+
+	template<auto Value, auto = _na_>
+	using T_function_out_type = typename pattern_match_function<Value>::template induct
+	<
+		func_out_type_cont
+	>;
+
+// in type:
+
+	template<bool, typename, typename InType, typename...>
+	using func_in_type_cont = InType;
+
+	template<auto Value, auto = _na_>
+	using T_function_in_type = typename pattern_match_function<Value>::template induct
+	<
+		func_in_type_cont
+	>;
+
+// (convenience aliases):
+
+	template<auto Value, auto = _na_>
+	using f_out_type = typename pattern_match_function<Value>::template induct
+	<
+		func_out_type_cont
+	>;
+
+	template<auto Value, auto = _na_>
+	using f_in_type = typename pattern_match_function<Value>::template induct
+	<
+		func_in_type_cont
+	>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -154,101 +375,6 @@ namespace nlfs_0
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// boolean type:
-
-/***********************************************************************************************************************/
-
-	using S_false								= S_value_V<false>;
-	using S_true								= S_value_V<true>;
-
-	template<bool Predicate, auto = _na_> using S_boolean			= S_value_V<Predicate>;
-
-	template<bool Value, auto = _na_> using S_boolean_not			= S_value_V<!Value>;
-	template<bool Value1, bool Value2> using S_boolean_and			= S_value_V<Value1 && Value2>;
-	template<bool Value1, bool Value2> using S_boolean_or			= S_value_V<Value1 || Value2>;
-
-	template<bool Value, auto = _na_> constexpr bool V_boolean_not		= ! Value;
-	template<bool Value1, bool Value2> constexpr bool V_boolean_and		= Value1 && Value2;
-	template<bool Value1, bool Value2> constexpr bool V_boolean_or		= Value1 || Value2;
-
-/***********************************************************************************************************************/
-
-// true:
-
-	template<bool True, auto = _na_>
-	struct pattern_match_bool
-	{
-		// then else:
-
-			// value:
-
-			template<auto Antecedent, auto Consequent>
-			static constexpr auto V_then_else_VxV = Antecedent;
-
-			// type:
-
-			template<typename Antecedent, typename Consequent>
-			using T_then_else_TxT = Antecedent;
-
-		// hold:
-
-			template<typename Antecedent, template<typename> class Function, typename Consequent>
-			using T_hold_TxGxT = Antecedent;
-	};
-
-/***********************************************************************************************************************/
-
-// false:
-
-	template<auto NA>
-	struct pattern_match_bool<false, NA>
-	{
-		// then else:
-
-			// value:
-
-			template<auto Antecedent, auto Consequent>
-			static constexpr auto V_then_else_VxV = Consequent;
-
-			// type:
-
-			template<typename Antecedent, typename Consequent>
-			using T_then_else_TxT = Consequent;
-
-		// hold:
-
-			template<typename Antecedent, template<typename> class Function, typename Consequent>
-			using T_hold_TxGxT = Function<Consequent>;
-	};
-
-/***********************************************************************************************************************/
-
-// if then else:
-
-	// value:
-
-	template<bool Predicate, auto Antecedent, auto Consequent>
-	constexpr auto V_if_then_else = pattern_match_bool<Predicate>::template
-		V_then_else_VxV<Antecedent, Consequent>;
-
-	// type:
-
-	template<bool Predicate, typename Antecedent, typename Consequent>
-	using T_if_then_else = typename pattern_match_bool<Predicate>::template
-		T_then_else_TxT<Antecedent, Consequent>;
-
-/***********************************************************************************************************************/
-
-// hold:
-
-	template<bool Predicate, typename Antecedent, template<typename> class Function, typename Consequent>
-	using T_hold = typename pattern_match_bool<Predicate>::template
-		T_hold_TxGxT<Antecedent, Function, Consequent>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
 // auto category:
 
 /***********************************************************************************************************************/
@@ -256,13 +382,14 @@ namespace nlfs_0
 // typename to auto (functor):
 
 	template<typename Type>
-	constexpr void type_map(Type)			{ }	// unsafe to use directly,
-								// use the following instead:
+	constexpr void type_map(Type)			{ }			// Unsafe to use directly,
+										// as Type cannot equal void.
+										// use the following instead:
 
 	template<typename Type>
-	constexpr auto U_type_T		 		= type_map
-							<
-								T_hold
+	constexpr auto U_type_T		 		= type_map		// This implementation was chosen
+							<			// as it simplifies the special
+								T_hold		// case when Type == void.
 								<
 									V_is_reference_T<Type>,
 
@@ -271,15 +398,87 @@ namespace nlfs_0
 								>
 							>;
 
-	// T_decltype(_type)_T:
-
 	template<typename Type>
+	using let_T_type_U		 		= T_hold
+							<
+								V_is_reference_T<Type>,
+
+								Type,
+								T_pointer_type_T, Type
+							>;
+
+	template<auto TypeMap>
+	using T_type_U			 		= let_T_type_U
+							<
+								T_function_in_type<TypeMap>
+							>;
+
+	template<typename Type>				// T_decltype(_type)_T:
 	using T_decltype_T				= decltype(U_type_T<Type>);
 
-	// U_(type_)decltype_V:
-
-	template<auto Value>
+	template<auto Value>				// U_(type_)decltype_V:
 	constexpr auto U_decltype_V	 		= U_type_T<decltype(Value)>;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// identity type:
+
+/***********************************************************************************************************************/
+
+	template<auto Value1, auto Value2>
+	constexpr bool V_equal_VxV			= value_pair<Value1, Value2>::match;
+
+	template<auto Value1, auto Value2>
+	using S_equal_VxV				= S_boolean<value_pair<Value1, Value2>::match>;
+
+/***********************************************************************************************************************/
+
+	template<typename Type1, typename Type2>
+	constexpr bool V_is_equal_UxU(void(*)(Type1), void(*)(Type2))	// Unsafe to use directly,
+		{ return false; }
+
+	template<typename Type>
+	constexpr bool V_is_equal_UxU(void(*)(Type), void(*)(Type))	// Use the following instead:
+		{ return true; }
+
+	//
+
+	template<typename Type1, typename Type2>
+	constexpr bool V_equal_TxT			= V_is_equal_UxU(U_type_T<Type1>, U_type_T<Type2>);
+
+	template<typename Type1, typename Type2>
+	using S_equal_TxT				= S_boolean<V_is_equal_UxU(U_type_T<Type1>, U_type_T<Type2>)>;
+
+/***********************************************************************************************************************/
+
+	template<auto TypeMap1, auto TypeMap2>
+	constexpr bool V_equal_UxU			= V_is_equal_UxU(TypeMap1, TypeMap2);
+
+	template<auto TypeMap1, auto TypeMap2>
+	using S_equal_UxU				= S_boolean<V_is_equal_UxU(TypeMap1, TypeMap2)>;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// identifiers (convenience aliases):
+
+/***********************************************************************************************************************/
+
+	constexpr auto U_void							= U_type_T<void>;
+	constexpr auto U_char_ptr						= U_type_T<char*>;
+
+/***********************************************************************************************************************/
+
+	template<auto Type, auto = _na_> using S_equals_void			= S_equal_UxU<Type, U_void>;
+
+	template<auto Type1, auto Type2> using S_left_equals_void		= S_equal_UxU<Type1, U_void>;
+	template<auto Type1, auto Type2> using S_right_equals_void		= S_equal_UxU<Type2, U_void>;
+
+	//
+
+	template<auto Type> constexpr bool V_equals_char_ptr			= V_equal_UxU<Type, U_char_ptr>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -331,6 +530,13 @@ namespace nlfs_0
 
 		using type_inference_failure		= S_value_V<V_ErrMsg::type_inference_failure>;
 	};
+
+/***********************************************************************************************************************/
+
+	template<typename e>
+	constexpr bool V_is_type_inference_failure_T		= V_equal_TxT<e, S_ErrMsg::type_inference_failure>;
+
+	template<typename Type> using force_static_assert	= S_value_V<Type::template result<false>()>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -591,202 +797,6 @@ namespace nlfs_0
 	template<auto, auto> using otherwise		= S_true;
 	template<auto, auto> using return_false		= S_false;
 	template<auto, auto> using return_true		= S_true;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// function type:
-
-/***********************************************************************************************************************/
-
-	enum struct V_Arity
-	{
-		nullary,
-		unary,
-		binary,
-		n_ary,
-
-		dimension // filler
-	};
-
-/***********************************************************************************************************************/
-
-	template<auto, auto = _na_>
-	struct pattern_match_function
-	{
-		static constexpr bool match		= false;
-	};
-
-	template<typename OutType, OutType(*f)(), auto NA>
-	struct pattern_match_function<f, NA>
-	{
-		static constexpr bool match		= true;
-		static constexpr auto U_decltype	= U_decltype_V<f>;
-		static constexpr V_Arity arity		= V_Arity::nullary;
-
-		using out_type				= OutType;
-		using in_type				= void;
-	};
-
-	template<typename OutType, typename InType, OutType(*f)(InType), auto NA>
-	struct pattern_match_function<f, NA>
-	{
-		static constexpr bool match		= true;
-		static constexpr auto U_decltype	= U_decltype_V<f>;
-		static constexpr V_Arity arity		= V_Arity::unary;
-
-		using out_type				= OutType;
-		using in_type				= InType;
-	};
-
-	template<typename OutType, typename InType1, typename InType2, OutType(*f)(InType1, InType2), auto NA>
-	struct pattern_match_function<f, NA>
-	{
-		static constexpr bool match		= true;
-		static constexpr auto U_decltype	= U_decltype_V<f>;
-		static constexpr V_Arity arity		= V_Arity::binary;
-
-		using out_type				= OutType;
-		using car_in_type			= InType1;
-		using cdr_in_type			= InType2;
-	};
-
-	template
-	<
-		typename OutType,
-		typename InType1, typename InType2, typename InType3, typename... InTypes,
-		OutType(*f)(InType1, InType2, InType3, InTypes...), auto NA
-	>
-	struct pattern_match_function<f, NA>
-	{
-		static constexpr bool match		= true;
-		static constexpr auto U_decltype	= U_decltype_V<f>;
-		static constexpr V_Arity arity		= V_Arity::n_ary;
-
-		using out_type				= OutType;
-	};
-
-/***********************************************************************************************************************/
-
-	template<auto f> constexpr bool V_is_function_V			= pattern_match_function<f>::match;
-	template<auto f> constexpr auto U_function_type_V		= pattern_match_function<f>::U_decltype;
-
-	template<auto f> constexpr V_Arity V_arity_V			= pattern_match_function<f>::arity;
-	template<auto f> constexpr bool V_is_nullary_V			= (V_arity_V<f> == V_Arity::nullary);
-	template<auto f> constexpr bool V_is_unary_V			= (V_arity_V<f> == V_Arity::unary);
-	template<auto f> constexpr bool V_is_binary_V			= (V_arity_V<f> == V_Arity::binary);
-
-	//
-
-	template<auto f, auto = _na_> using T_function_out_type_V	= typename pattern_match_function<f>::out_type;
-	template<auto f, auto = _na_> using T_function_in_type_V	= typename pattern_match_function<f>::in_type;
-	template<auto f, auto = _na_> using T_function_car_in_type_V	= typename pattern_match_function<f>::car_in_type;
-	template<auto f, auto = _na_> using T_function_cdr_in_type_V	= typename pattern_match_function<f>::cdr_in_type;
-
-	// (convenience aliases):
-
-	template<auto f, auto = _na_> using f_out_type			= typename pattern_match_function<f>::out_type;
-	template<auto f, auto = _na_> using f_in_type			= typename pattern_match_function<f>::in_type;
-	template<auto f, auto = _na_> using f_car_in_type		= typename pattern_match_function<f>::car_in_type;
-	template<auto f, auto = _na_> using f_cdr_in_type		= typename pattern_match_function<f>::cdr_in_type;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// identity type:
-
-/***********************************************************************************************************************/
-
-	template<auto Value1, auto Value2>
-	constexpr bool V_equal_VxV			= value_pair<Value1, Value2>::match;
-
-	template<auto Value1, auto Value2>
-	using S_equal_VxV				= S_boolean<value_pair<Value1, Value2>::match>;
-
-/***********************************************************************************************************************/
-
-	template<typename Type1, typename Type2>
-	constexpr bool V_is_equal_UxU(void(*)(Type1), void(*)(Type2))	// unsafe to use directly,
-		{ return false; }
-
-	template<typename Type>
-	constexpr bool V_is_equal_UxU(void(*)(Type), void(*)(Type))	// use the following instead:
-		{ return true; }
-
-	//
-
-	template<typename Type1, typename Type2>
-	constexpr bool V_equal_TxT			= V_is_equal_UxU(U_type_T<Type1>, U_type_T<Type2>);
-
-	template<typename Type1, typename Type2>
-	using S_equal_TxT				= S_boolean<V_is_equal_UxU(U_type_T<Type1>, U_type_T<Type2>)>;
-
-/***********************************************************************************************************************/
-
-	template<auto TypeMap1, auto TypeMap2>
-	constexpr bool V_equal_UxU			= V_is_equal_UxU(TypeMap1, TypeMap2);
-
-	template<auto TypeMap1, auto TypeMap2>
-	using S_equal_UxU				= S_boolean<V_is_equal_UxU(TypeMap1, TypeMap2)>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// identifiers (convenience aliases):
-
-/***********************************************************************************************************************/
-
-	constexpr auto U_void							= U_type_T<void>;
-	constexpr auto U_char_ptr						= U_type_T<char*>;
-
-/***********************************************************************************************************************/
-
-	template<auto Type, auto = _na_> using S_equals_void			= S_equal_UxU<Type, U_void>;
-
-	template<auto Type1, auto Type2> using S_left_equals_void		= S_equal_UxU<Type1, U_void>;
-	template<auto Type1, auto Type2> using S_right_equals_void		= S_equal_UxU<Type2, U_void>;
-
-	//
-
-	template<auto Type> constexpr bool V_equals_char_ptr			= V_equal_UxU<Type, U_char_ptr>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// error type (continued):
-
-/***********************************************************************************************************************/
-
-	template<typename e>
-	constexpr bool V_is_type_inference_failure_T		= V_equal_TxT<e, S_ErrMsg::type_inference_failure>;
-
-	template<typename Type> using force_static_assert	= S_value_V<Type::template result<false>()>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// auto category (continued):
-
-/***********************************************************************************************************************/
-
-	template<typename Type>
-	using let_T_type_U		 		= T_hold
-							<
-								V_is_reference_T<Type>,
-
-								Type,
-								T_pointer_type_T, Type
-							>;
-
-	template<auto TypeMap>
-	using T_type_U			 		= let_T_type_U
-							<
-								T_function_in_type_V<TypeMap>
-							>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/

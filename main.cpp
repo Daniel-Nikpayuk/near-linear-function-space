@@ -19,90 +19,80 @@
 
 #include<cstdio>
 #include"a-source.hpp"
-//#include"b-modules.hpp"
-//#include"C-tests/prerequisites.hpp"
-
-/***********************************************************************************************************************/
-
-//	using namespace extended_numbers;
-//	using namespace ocli_testing;
-
-/***********************************************************************************************************************/
 
 	using namespace list_operators;
 
 /***********************************************************************************************************************/
 
+	// in type:
+
 /*
-	int factorial(int n)
-	{
-		using pair			= pair_signature
-						<
-							_car_object<int>,
-							_cdr_object<int>
-						>;
+		struct recursive_in_type
+		{
+			template<bool, auto Value, auto pos, auto, auto InType, auto... InTypes>
+			using in_type_cont = T_hold
+			<
+				!bool(pos),
 
-		constexpr auto is_zero		= sign_cast
-						<
-							is_value<int, 0>, cd_cdr, pair
-						>;
-		constexpr auto times		= sign_bicast
-						<
-							multiply<int>    , _id_            , cd_car  ,
-								           _id_            , cd_cdr  , pair
-						>;
-		constexpr auto iterate		= sign_biapply
-						<
-							assign<int, int> , _id_            , d_car   ,
-									   times           , cd_pair , pair
-						>;
-		constexpr auto decrement	= sign_biapply
-						<
-							assign<int, int> , _id_            , d_cdr   ,
-								           add_by<int, -1> , cd_cdr  , pair
-						>;
-		constexpr auto pair_factorial	= cycle
-						<
-							pair,
+				T_type_U, InType,
+				S_in_type, 
+			>;
 
-							cp_stem		< is_zero, _id_ , iterate >,
-							cp_lift		< decrement               >
-						>;
-		constexpr auto pair_car		= pair_f_car
-						<
-							_id_, d_car<int>, pair
-						>;
+			template<auto Value, auto pos = 0>
+			using result = T_if_then_else
+			<
+				!bool(pos), in_type_true, in_type_false
 
-		pair s(1, n);
+			>::template hold
+			<
+				pattern_match_function<Value>::template induct, in_type_cont, Value, pos
+			>
+		};
 
-		return  pair_car(pair_factorial(s));
-	};
+		template<auto Value, auto pos = 0>
+		using S_in_type = T_hold
+		<
+			V_is_nullary<Value>,
+
+			void,
+
+			recursive_in_type::template result, Value, pos
+		>;
 */
 
 /***********************************************************************************************************************/
 
-	int square(int x)	{ return x*x; }
-	int plus_two(int x)	{ return x+2; }
-	void print(int x)	{ printf("%d\n", x); }
+//	template<typename... Types> using type_list			= S_value_V<types_map<Types...>>; // wrong!
 
-	auto comp1		= V_compose_opt		< square   , plus_two >;
-	auto comp2		= V_compose_opt		< print    , square   >;
+/***********************************************************************************************************************/
 
-//	using S_comp3		= S_compose_opt		< 5        , plus_two >;	// static assertion failure.
-	using S_comp3		= S_compose_opt		< plus_two , plus_two >;	// static assertion success.
-	using assert1		= assert_S_compose	< S_comp3             >;
-
-	auto comp3		= V_value_S		< S_comp3             >;
+		constexpr void _id_()			{ }
+		constexpr void char_ptr(char*)		{ }
+		constexpr char c73()			{ return 73; }
+		constexpr int int_sq(int x)		{ return x*x; }
 
 /***********************************************************************************************************************/
 
 	int main(int argc, char *argv[])
 	{
-		print(comp1(5));	// prints: 49
-		comp2(7);		// prints: 49
-		print(comp3(11));	// prints: 15
+		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, char&> ? "true" : "false");
+		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, void> ? "true" : "false");
+		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<char>>, void> ? "true" : "false");
+		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, char> ? "true" : "false");
+		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<hold_true>>, hold_true> ? "true" : "false");
 
-//		print_number(39275);
+	//	printf("%s\n", V_is_function<5> ? "true" : "false");
+	//	printf("%s\n", V_is_function<c73> ? "true" : "false");
+
+	//	printf("%s\n", V_is_nullary<c73> ? "true" : "false");
+	//	printf("%s\n", V_is_nullary<int_sq> ? "true" : "false");
+
+	//	printf("%s\n", V_is_unary<c73> ? "true" : "false");
+	//	printf("%s\n", V_is_unary<int_sq> ? "true" : "false");
+
+	//	printf("%s\n", V_equal_TxT<f_out_type<_id_>, void> ? "true" : "false");
+	//	printf("%s\n", V_equal_TxT<f_out_type<c73>, void> ? "true" : "false");
+	//	printf("%s\n", V_equal_TxT<f_out_type<int_sq>, int> ? "true" : "false");
 
 		return 0;
 	}
