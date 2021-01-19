@@ -488,20 +488,46 @@ namespace nlfs_0
 		using induct = Continuation<true, count, Args..., OutType, InTypes...>;
 	};
 
+	//
+
+	template<auto f, auto = _na_> using return_function			= S_value_V<f>;
+
+	template<auto f, auto> using return_left_function			= S_value_V<f>;
+	template<auto, auto g> using return_right_function			= S_value_V<g>;
+
 /***********************************************************************************************************************/
 
 // match:
 
 	template<bool Match, auto, typename, typename...>
-	using func_match_cont = S_value_V<Match>;
+	using func_is_match_cont = S_value_V<Match>;
 
 	template<auto f, auto = _na_>
-	using S_is_function = typename pattern_match_function<f>::template induct
+	using S_is_a_function = typename pattern_match_function<f>::template induct
 	<
-		func_match_cont, _na_
+		func_is_match_cont, _na_
 	>;
 
-	template<auto f> constexpr bool V_is_function = V_value_S<S_is_function<f>>;
+	template<auto f, auto  > using S_left_is_a_function			= S_is_a_function<f>;
+	template<auto  , auto g> using S_right_is_a_function			= S_is_a_function<g>;
+
+	template<auto f> constexpr bool V_is_a_function				= V_value_S<S_is_a_function<f>>;
+
+// not match:
+
+	template<bool Match, auto, typename, typename...>
+	using func_not_match_cont = S_value_V<!Match>;
+
+	template<auto f, auto = _na_>
+	using S_not_a_function = typename pattern_match_function<f>::template induct
+	<
+		func_not_match_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_not_a_function			= S_not_a_function<f>;
+	template<auto  , auto g> using S_right_not_a_function			= S_not_a_function<g>;
+
+	template<auto f> constexpr bool V_not_a_function			= V_value_S<S_not_a_function<f>>;
 
 // arity:
 
@@ -517,15 +543,101 @@ namespace nlfs_0
 	template<auto f, typename SizeType = unsigned>
 	constexpr bool V_function_arity = V_value_S<S_function_arity<f, SizeType>>;
 
-// is (... ; arity):
+// is nullary:
 
-	template<auto f> constexpr bool V_is_nullary		= (V_function_arity<f> == 0);
-	template<auto f> constexpr bool V_is_unary		= (V_function_arity<f> == 1);
-	template<auto f> constexpr bool V_is_binary		= (V_function_arity<f> == 2);
+	template<bool, auto, typename, typename... InTypes>
+	using func_is_nullary_cont = S_value_V<!bool(sizeof...(InTypes))>;
 
-	template<auto f, auto = _na_> using S_is_nullary	= S_boolean<V_is_nullary<f>>;
-	template<auto f, auto = _na_> using S_is_unary		= S_boolean<V_is_unary<f>>;
-	template<auto f, auto = _na_> using S_is_binary		= S_boolean<V_is_binary<f>>;
+	template<auto f, auto = _na_>
+	using S_is_nullary_function = typename pattern_match_function<f>::template induct
+	<
+		func_is_nullary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_is_nullary_function	= S_is_nullary_function<f>;
+	template<auto  , auto g> using S_right_is_nullary_function	= S_is_nullary_function<g>;
+
+	template<auto f> constexpr bool V_is_nullary_function		= V_value_S<S_is_nullary_function<f>>;
+
+// not nullary:
+
+	template<bool, auto, typename, typename... InTypes>
+	using func_not_nullary_cont = S_value_V<bool(sizeof...(InTypes))>;
+
+	template<auto f, auto = _na_>
+	using S_not_nullary_function = typename pattern_match_function<f>::template induct
+	<
+		func_not_nullary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_not_nullary_function	= S_not_nullary_function<f>;
+	template<auto  , auto g> using S_right_not_nullary_function	= S_not_nullary_function<g>;
+
+	template<auto f> constexpr bool V_not_nullary_function		= V_value_S<S_not_nullary_function<f>>;
+
+// is unary:
+
+	template<bool, auto, typename, typename... InTypes>
+	using func_is_unary_cont = S_value_V<sizeof...(InTypes) == 1>;
+
+	template<auto f, auto = _na_>
+	using S_is_unary_function = typename pattern_match_function<f>::template induct
+	<
+		func_is_unary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_is_unary_function		= S_is_unary_function<f>;
+	template<auto  , auto g> using S_right_is_unary_function	= S_is_unary_function<g>;
+
+	template<auto f> constexpr bool V_is_unary_function		= V_value_S<S_is_unary_function<f>>;
+
+// not unary:
+
+	template<bool, auto, typename, typename... InTypes>
+	using func_not_unary_cont = S_value_V<sizeof...(InTypes) != 1>;
+
+	template<auto f, auto = _na_>
+	using S_not_unary_function = typename pattern_match_function<f>::template induct
+	<
+		func_not_unary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_not_unary_function	= S_not_unary_function<f>;
+	template<auto  , auto g> using S_right_not_unary_function	= S_not_unary_function<g>;
+
+	template<auto f> constexpr bool V_not_unary_function		= V_value_S<S_not_unary_function<f>>;
+
+// is binary:
+
+	template<bool, auto, typename, typename... InTypes>
+	using func_is_binary_cont = S_value_V<sizeof...(InTypes) == 2>;
+
+	template<auto f, auto = _na_>
+	using S_is_binary_function = typename pattern_match_function<f>::template induct
+	<
+		func_is_binary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_is_binary_function	= S_is_binary_function<f>;
+	template<auto  , auto g> using S_right_is_binary_function	= S_is_binary_function<g>;
+
+	template<auto f> constexpr bool V_is_binary_function		= V_value_S<S_is_binary_function<f>>;
+
+// not binary:
+
+	template<bool, auto, typename, typename... InTypes>
+	using func_not_binary_cont = S_value_V<sizeof...(InTypes) != 2>;
+
+	template<auto f, auto = _na_>
+	using S_not_binary_function = typename pattern_match_function<f>::template induct
+	<
+		func_not_binary_cont, _na_
+	>;
+
+	template<auto f, auto  > using S_left_not_binary_function	= S_not_binary_function<f>;
+	template<auto  , auto g> using S_right_not_binary_function	= S_not_binary_function<g>;
+
+	template<auto f> constexpr bool V_not_binary_function		= V_value_S<S_not_binary_function<f>>;
 
 // out type:
 
@@ -582,10 +694,10 @@ namespace nlfs_0
 	template<auto f, auto pos = 0>
 	using T_function_in_type = T_colist_Bs
 	<
-		f, _na_,		f, pos,
+		f, _na_,			f, pos,
 
-		S_is_nullary,		return_void,
-		otherwise,		return_in_type
+		S_is_nullary_function,		return_void,
+		otherwise,			return_in_type
 	>;
 
 // (convenience aliases):
@@ -599,10 +711,10 @@ namespace nlfs_0
 	template<auto f, auto pos = 0>
 	using f_in_type = T_colist_Bs
 	<
-		f, _na_,		f, pos,
+		f, _na_,			f, pos,
 
-		S_is_nullary,		return_void,
-		otherwise,		return_in_type
+		S_is_nullary_function,		return_void,
+		otherwise,			return_in_type
 	>;
 
 /***********************************************************************************************************************/

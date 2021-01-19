@@ -53,18 +53,6 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_is_a_function			= S_boolean<V_is_function_V<f>>;
-	template<auto f, auto  > using S_left_is_a_function			= S_is_a_function<f>;
-	template<auto  , auto g> using S_right_is_a_function			= S_is_a_function<g>;
-
-	//
-
-	template<auto f, auto = _na_> using S_not_a_function			= S_boolean<!V_is_function_V<f>>;
-	template<auto f, auto  > using S_left_not_a_function			= S_not_a_function<f>;
-	template<auto  , auto g> using S_right_not_a_function			= S_not_a_function<g>;
-
-/***********************************************************************************************************************/
-
 	template<auto f> constexpr bool V_out_type_equals_void			= V_equal_TxT<f_out_type<f>, void>;
 	template<auto f, auto = _na_> using S_out_type_equals_void		= S_equal_TxT<f_out_type<f>, void>;
 	template<auto f, auto  > using S_left_out_type_equals_void		= S_out_type_equals_void<f>;
@@ -79,64 +67,15 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_in_type_equals_void		= S_boolean<V_is_nullary_V<f>>;
+	template<auto f, auto = _na_> using S_in_type_equals_void		= S_boolean<V_is_nullary_function<f>>;
 	template<auto f, auto  > using S_left_in_type_equals_void		= S_in_type_equals_void<f>;
 	template<auto  , auto g> using S_right_in_type_equals_void		= S_in_type_equals_void<g>;
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_is_nullary			= S_boolean<V_is_nullary_V<f>>;
-	template<auto f, auto  > using S_left_is_nullary			= S_is_nullary<f>;
-	template<auto  , auto g> using S_right_is_nullary			= S_is_nullary<g>;
-
-	//
-
-	template<auto f, auto = _na_> using S_not_nullary			= S_boolean<!V_is_nullary_V<f>>;
-	template<auto f, auto  > using S_left_not_nullary			= S_not_nullary<f>;
-	template<auto  , auto g> using S_right_not_nullary			= S_not_nullary<g>;
-
-/***********************************************************************************************************************/
-
-	template<auto f, auto = _na_> using S_is_unary				= S_boolean<V_is_unary_V<f>>;
-	template<auto f, auto  > using S_left_is_unary				= S_is_unary<f>;
-	template<auto  , auto g> using S_right_is_unary				= S_is_unary<g>;
-
-	//
-
-	template<auto f, auto = _na_> using S_not_unary				= S_boolean<!V_is_unary_V<f>>;
-	template<auto f, auto  > using S_left_not_unary				= S_not_unary<f>;
-	template<auto  , auto g> using S_right_not_unary			= S_not_unary<g>;
-
-/***********************************************************************************************************************/
-
-	template<auto f, auto = _na_> using S_is_binary				= S_boolean<V_is_binary_V<f>>;
-	template<auto f, auto  > using S_left_is_binary				= S_is_binary<f>;
-	template<auto  , auto g> using S_right_is_binary			= S_is_binary<g>;
-
-	//
-
-	template<auto f, auto = _na_> using S_not_binary			= S_boolean<!V_is_binary_V<f>>;
-	template<auto f, auto  > using S_left_not_binary			= S_not_binary<f>;
-	template<auto  , auto g> using S_right_not_binary			= S_not_binary<g>;
-
-/***********************************************************************************************************************/
-
-	template<auto f> constexpr bool V_is_nfu	= V_out_type_equals_void<f>  &&  V_is_unary_V<f>;
-	template<auto f> constexpr bool V_is_ufn	= V_out_type_not_void<f>     &&  V_is_nullary_V<f>;
-	template<auto f> constexpr bool V_is_ufu	= V_out_type_not_void<f>     &&  V_is_unary_V<f>;
-	template<auto f> constexpr bool V_is_ufb	= V_out_type_not_void<f>     &&  V_is_binary_V<f>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// return:
-
-/***********************************************************************************************************************/
-
-	template<auto f, auto = _na_> using return_function			= S_value_V<f>;
-
-	template<auto f, auto> using return_left_function			= S_value_V<f>;
-	template<auto, auto g> using return_right_function			= S_value_V<g>;
+	template<auto f> constexpr bool V_is_nfs	= V_out_type_equals_void<f>  &&  V_not_nullary_function<f>;
+	template<auto f> constexpr bool V_is_ufn	= V_out_type_not_void<f>     &&  V_is_nullary_function<f>;
+	template<auto f> constexpr bool V_is_ufs	= V_out_type_not_void<f>     &&  V_not_nullary_function<f>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -147,106 +86,23 @@ namespace nlfs_1
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// aliases:
-
-/***********************************************************************************************************************/
-
-	template<typename Spec> using return_type			= typename Spec::return_type;
-	template<typename Spec> using arg_type				= typename Spec::arg_type;
-
-	template<typename Spec> constexpr auto return_cons		= Spec::return_cons;
-	template<typename Spec> constexpr auto lval			= Spec::lval;
-	template<typename Spec> constexpr auto rval			= Spec::rval;
-	template<typename Spec> constexpr auto car_rval			= Spec::car_rval;
-	template<typename Spec> constexpr auto cdr_rval			= Spec::cdr_rval;
-
-	//
-
-	template<typename Spec> using sign_type				= typename Spec::sign_type;
-
-	template<typename Spec> constexpr auto sign_return		= Spec::sign_return;
-	template<typename Spec> constexpr auto sign_facade		= Spec::sign_facade;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
 // predicates:
 
 /***********************************************************************************************************************/
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>(arg));
-	}
+	template<typename T1, typename T2> constexpr bool equal(T1 a1, T2 a2)			{ return (a1 == a2); }
+	template<typename T1, typename T2> constexpr bool not_equal(T1 a1, T2 a2)		{ return (a1 != a2); }
+	template<typename T1, typename T2> constexpr bool less_than(T1 a1, T2 a2)		{ return (a1 < a2); }
+	template<typename T1, typename T2> constexpr bool less_than_or_equal(T1 a1, T2 a2)	{ return (a1 <= a2); }
+	template<typename T1, typename T2> constexpr bool greater_than(T1 a1, T2 a2)		{ return (a1 > a2); }
+	template<typename T1, typename T2> constexpr bool greater_than_or_equal(T1 a1, T2 a2)	{ return (a1 >= a2); }
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_not_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>(arg));
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_less_than(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>(arg));
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_less_than_or_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>(arg));
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_greater_than(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) > rval<Spec>(arg));
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_greater_than_or_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) >= rval<Spec>(arg));
-	}
-
-	//
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_is_value(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>());
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_not_value(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>());
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_is_less_than(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_is_less_than_or_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_is_greater_than(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_is_greater_than_or_equal(arg_type<Spec> arg)
-	{
-		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
-	}
+	template<typename T, T Val> constexpr bool is_value(T a)				{ return (a == Val); }
+	template<typename T, T Val> constexpr bool not_value(T a)				{ return (a != Val); }
+	template<typename T, T Val> constexpr bool is_less_than(T a)				{ return (a < Val); }
+	template<typename T, T Val> constexpr bool is_less_than_or_equal(T a)			{ return (a <= Val); }
+	template<typename T, T Val> constexpr bool is_greater_than(T a)				{ return (a > Val); }
+	template<typename T, T Val> constexpr bool is_greater_than_or_equal(T a)		{ return (a >= Val); }
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -255,11 +111,7 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_constant()
-	{
-		return return_cons<Spec>();
-	}
+	template<typename T, T Val> constexpr T constant()					{ return Val; }
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -268,87 +120,23 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_add(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>(arg);
+	template<typename T0, typename T1, typename T2> constexpr T0 add(T1 a1, T2 a2)		{ return a1 + a2; }
+	template<typename T0, typename T1, typename T2> constexpr T0 subtract(T1 a1, T2 a2)	{ return a1 - a2; }
+	template<typename T0, typename T1, typename T2> constexpr T0 multiply(T1 a1, T2 a2)	{ return a1 * a2; }
+	template<typename T0, typename T1, typename T2> constexpr T0 divide(T1 a1, T2 a2)	{ return a1 / a2; }
+	template<typename T0, typename T1, typename T2> constexpr T0 modulo(T1 a1, T2 a2)	{ return a1 % a2; }
 
-		return return_cons<Spec>(arg);
-	}
+	template<typename T, T Val> constexpr T add_by(T a)					{ return a + Val; }
+	template<typename T, T Val> constexpr T subtract_by(T a)				{ return a - Val; }
+	template<typename T, T Val> constexpr T multiply_by(T a)				{ return a * Val; }
+	template<typename T, T Val> constexpr T divide_by(T a)					{ return a / Val; }
+	template<typename T, T Val> constexpr T modulo_by(T a)					{ return a % Val; }
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_subtract(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>(arg);
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_multiply(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>(arg);
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_divide(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>(arg);
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_modulo(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>(arg);
-
-		return return_cons<Spec>(arg);
-	}
-
-	//
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_add_by(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>();
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_subtract_by(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>();
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_multiply_by(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>();
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_divide_by(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>();
-
-		return return_cons<Spec>(arg);
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_modulo_by(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>();
-
-		return return_cons<Spec>(arg);
-	}
+	template<typename T, T Val> constexpr void add_assign_by(T a)				{ a += Val; }
+	template<typename T, T Val> constexpr void subtract_assign_by(T a)			{ a -= Val; }
+	template<typename T, T Val> constexpr void multiply_assign_by(T a)			{ a *= Val; }
+	template<typename T, T Val> constexpr void divide_assign_by(T a)			{ a /= Val; }
+	template<typename T, T Val> constexpr void modulo_assign_by(T a)			{ a %= Val; }
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -357,19 +145,8 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_max(arg_type<Spec> arg)
-	{
-		if (lval<Spec>(arg) > rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
-		else					return return_cons<Spec>(rval<Spec>(arg));
-	}
-
-	template<typename Spec>
-	constexpr return_type<Spec> sign_min(arg_type<Spec> arg)
-	{
-		if (lval<Spec>(arg) < rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
-		else					return return_cons<Spec>(rval<Spec>(arg));
-	}
+	template<typename T0, typename T1, typename T2> constexpr T0 max(T1 a1, T2 a2)	{ return a1 > a2 ? a1 : a2; }
+	template<typename T0, typename T1, typename T2> constexpr T0 min(T1 a1, T2 a2)	{ return a1 < a2 ? a1 : a2; }
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -378,13 +155,7 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<typename Spec>
-	constexpr return_type<Spec> sign_assign(arg_type<Spec> arg)
-	{
-		lval<Spec>(arg) = rval<Spec>(arg);
-
-		return return_cons<Spec>(arg);
-	}
+	template<typename T1, typename T2> constexpr void assign(T1 a1, T2 a2)			{ a1 = a2; }
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -445,7 +216,7 @@ namespace nlfs_1
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
-		S_not_unary,			return_false,
+		S_not_unary_function,		return_false,
 		otherwise,			S_equals_id
 	>;
 
@@ -528,7 +299,7 @@ namespace nlfs_1
 	constexpr Type1 car(Type1 arg1, Type2 arg2)				{ return arg1; }
 
 	template<auto f>
-	constexpr auto V_car_cast_V						= car<f_car_in_type<f>, f_cdr_in_type<f>>;
+	constexpr auto V_car_cast_V						= car<f_in_type<f, 0>, f_in_type<f, 1>>;
 
 	//
 
@@ -536,7 +307,7 @@ namespace nlfs_1
 	constexpr Type2 cdr(Type1 arg1, Type2 arg2)				{ return arg2; }
 
 	template<auto f>
-	constexpr auto V_cdr_cast_V						= cdr<f_car_in_type<f>, f_cdr_in_type<f>>;
+	constexpr auto V_cdr_cast_V						= cdr<f_in_type<f, 0>, f_in_type<f, 1>>;
 
 	//
 
@@ -558,7 +329,7 @@ namespace nlfs_1
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
-		S_not_binary,			return_false,
+		S_not_binary_function,		return_false,
 		otherwise,			S_equals_car
 	>;
 
@@ -602,7 +373,7 @@ namespace nlfs_1
 
 		S_not_a_function,		return_false,
 		S_out_type_equals_void,		return_false,
-		S_not_binary,			return_false,
+		S_not_binary_function,		return_false,
 		otherwise,			S_equals_cdr
 	>;
 
@@ -644,6 +415,7 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
+/*
 	template<auto f, auto g>
 	constexpr void	n_compose_n
 			(
@@ -681,9 +453,11 @@ namespace nlfs_1
 					f_car_in_type<g> arg1,
 					f_cdr_in_type<g> arg2
 				)						{ return f(g(arg1, arg2)); }
+*/
 
 /***********************************************************************************************************************/
 
+/*
 	template<auto f, auto g> using return_n_compose_n			= S_value_V<n_compose_n<f, g>>;
 	template<auto f, auto g> using return_n_compose_u			= S_value_V<n_compose_u<f, g>>;
 	template<auto f, auto g> using return_n_compose_b			= S_value_V<n_compose_b<f, g>>;
@@ -691,9 +465,11 @@ namespace nlfs_1
 	template<auto f, auto g> using return_u_compose_n			= S_value_V<u_compose_n<f, g>>;
 	template<auto f, auto g> using return_u_compose_u			= S_value_V<u_compose_u<f, g>>;
 	template<auto f, auto g> using return_u_compose_b			= S_value_V<u_compose_b<f, g>>;
+*/
 
 /***********************************************************************************************************************/
 
+/*
 	struct left_not_a_func_assertion
 	{
 		template<bool Value>
@@ -729,6 +505,7 @@ namespace nlfs_1
 	template<auto, auto> using return_left_not_a_func_assertion		= left_not_a_func_assertion;
 	template<auto, auto> using return_right_not_a_func_assertion		= right_not_a_func_assertion;
 	template<auto, auto> using return_not_valid_composition_assertion	= not_valid_composition_assertion;
+*/
 
 /***********************************************************************************************************************/
 
@@ -742,6 +519,7 @@ namespace nlfs_1
 	//	u func u   o  u func u  -->  u func u
 	//	u func u   o  u func b  -->  u func b
 
+/*
 	template<auto f, auto g>
 	using S_not_valid_composition = S_boolean_not
 	<
@@ -755,6 +533,7 @@ namespace nlfs_1
 			( V_is_ufn<g> || V_is_ufu<g> || V_is_ufb<g> )
 		)
 	>;
+*/
 
 /***********************************************************************************************************************/
 
@@ -770,11 +549,14 @@ namespace nlfs_1
                               
 	//	   func1   ,  func2     -->  func1 o func2
 
+/*
 	template<auto f, auto g> using try_compose_but_return_left_function 	= return_function<f, u_compose_u<f, g>>;
 	template<auto f, auto g> using try_compose_but_return_right_function 	= return_function<g, u_compose_u<f, g>>;
+*/
 
 /***********************************************************************************************************************/
 
+/*
 	template<auto f, auto g>
 	using return_n_compose = T_colist_Bs
 	<
@@ -835,16 +617,19 @@ namespace nlfs_1
 
 	template<auto f, auto g>
 	constexpr auto V_compose_opt = V_value_S<S_compose_opt<f, g>>;
+*/
 
 /***********************************************************************************************************************/
 
 // do compose:
 
+/*
 	template<auto f, auto g>
 	using S_do_compose_opt = S_compose_opt<g, f>;
 
 	template<auto f, auto g>
 	constexpr auto V_do_compose_opt = V_value_S<S_compose_opt<g, f>>;
+*/
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -853,6 +638,7 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
+/*
 	template<auto f, auto g1, auto g2>
 	constexpr f_out_type<f>	V_curry_compose_VxVxV
 				(
@@ -873,6 +659,7 @@ namespace nlfs_1
 					f_car_in_type<f> arg1,
 					f_cdr_in_type<g> arg2
 				)					{ return f(arg1, g(arg2)); }
+*/
 
 /***********************************************************************************************************************/
 
@@ -886,6 +673,7 @@ namespace nlfs_1
 
 	//	func0   , func1 , func2  -->  func0 ( func1 , func2 )
 
+/*
 	template<auto f>
 	struct dispatch_curry_composition_opt
 	{
@@ -936,6 +724,7 @@ namespace nlfs_1
 
 	template<auto f, auto g1, auto g2>
 	constexpr auto V_curry_compose_opt = V_value_S<S_curry_compose_opt<f, g1, g2>>;
+*/
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/

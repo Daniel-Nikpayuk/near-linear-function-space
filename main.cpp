@@ -33,6 +33,64 @@
 
 /***********************************************************************************************************************/
 
+	template<auto f, auto g, typename... Types>
+	constexpr f_out_type<f> u_compose_u(Types... args)
+		{ return f(g(args...)); }
+
+	constexpr int square(int x)		{ return x*x; }
+	constexpr int plus_two(int x)		{ return x+2; }
+	constexpr int local_add(int x, int y)	{ return x+y; }
+
+	constexpr auto func0			= u_compose_u<square, plus_two, int>;
+	constexpr auto func1			= u_compose_u<square, local_add, int, int>;
+
+	//
+
+
+
+	template<typename, typename, typename> struct pattern_match_compose;
+
+	template
+	<
+		template<typename...> class ListName1, typename... Types1,
+		template<typename...> class ListName2, typename... Types2,
+		template<typename...> class ListName3, typename... Types3
+	>
+	struct pattern_match_compose<ListName1<Types1...>, ListName2<Types2...>, ListName3<Types3...>>
+	{
+		template<auto f_3, auto g_2>
+		static constexpr f_out_type<f_3> result(Types1... args1, Types2... args2, Types3... args3)
+		{
+			return f_3(args1..., g_2(args2...), args3...);
+		}
+	};
+
+	template<typename...> struct arg_list	{ };
+
+	using arg_list1				= arg_list<int>;
+	using arg_list2				= arg_list<int, int>;
+	using arg_list3				= arg_list<int>;
+
+	constexpr int multiply2(int x, int y)	{ return x*y; }
+	constexpr int add3(int x, int y, int z)	{ return x+y+z; }
+
+	constexpr auto curried_func		= pattern_match_compose<arg_list1, arg_list2, arg_list3>::template
+							result<add3, multiply2>;
+
+/***********************************************************************************************************************/
+
+	int main(int argc, char *argv[])
+	{
+		printf("%d\n", func0(5));			// prints: 49
+		printf("%d\n", func1(5, 7));			// prints: 144
+
+		printf("%d\n", curried_func(1, 2, 3, 4));	// prints: 11
+
+		return 0;
+	}
+
+/***********************************************************************************************************************/
+
 /*
 	int square(int x)	{ return x*x; }
 	int plus_two(int x)	{ return x+2; }
@@ -47,114 +105,6 @@
 
 	auto comp3		= V_value_S		< S_comp3             >;
 */
-
-/***********************************************************************************************************************/
-																
-	// Standard version:
-
-//		template<typename Type> Type square(Type x) { return x*x; }
-
-/***********************************************************************************************************************/
-
-	template<auto f, typename Struct, typename Type>
-	constexpr Struct set(Type value)
-	{
-		Struct arg;
-		f(arg) = value;
-
-		return arg;
-	}
-
-/***********************************************************************************************************************/
-
-	template<typename CarType, typename CdrType>
-	struct pair_signature
-	{
-		CarType car;
-		CdrType cdr;
-
-		pair_signature() { }
-	};
-
-	//
-
-	template<typename Pair>
-	constexpr auto & pair_car(Pair & arg)		{ return arg.car; }
-
-	template<typename Pair>
-	constexpr auto & pair_cdr(Pair & arg)		{ return arg.cdr; }
-
-	//
-
-	template<typename Pair, auto Car, auto Cdr>
-	struct pair_specification
-	{
-		using sign_type				= Pair;
-
-		static constexpr auto sign_return	= Car;
-		static constexpr auto sign_facade	= set<Cdr, Pair, T_reference_type_T<f_out_type<Cdr>>>;
-
-		static constexpr auto car		= Car;
-		static constexpr auto cdr		= Cdr;
-	};
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-	// Function as Text version:
-
-		template<typename Spec>
-		struct car__cdr
-		{
-			using return_type			= typename Spec::sign_type &;
-			using arg_type				= typename Spec::sign_type &;
-
-			static constexpr auto lval		= Spec::car;
-			static constexpr auto rval		= Spec::cdr;
-
-			static constexpr auto return_cons	= id<return_type>;
-		};
-
-		template<typename Spec>
-		struct car__car_x_cdr
-		{
-			using return_type			= typename Spec::sign_type &;
-			using arg_type				= typename Spec::sign_type &;
-
-			static constexpr auto lval		= Spec::car;
-			static constexpr auto car_rval		= Spec::car;
-			static constexpr auto cdr_rval		= Spec::cdr;
-
-			static constexpr auto return_cons	= id<return_type>;
-		};
-
-		template<typename Spec>
-		constexpr auto sign_square = V_do_compose_opt
-		<
-			sign_assign	< car__cdr       <Spec> >,
-			sign_multiply	< car__car_x_cdr <Spec> >
-		>;
-
-		template<typename Type>
-		Type square(Type x)
-		{
-			using pair		= pair_signature	< Type, Type                           >;
-			using spec		= pair_specification	< pair, pair_car<pair>, pair_cdr<pair> >;
-
-			sign_type<spec> s	= sign_facade<spec>(x);
-
-			return sign_return<spec>(sign_square<spec>(s));
-		}
-
-/***********************************************************************************************************************/
-
-	int main(int argc, char *argv[])
-	{
-		printf("%d\n", square(5));	// prints: 25
-
-		return 0;
-	}
 
 /***********************************************************************************************************************/
 

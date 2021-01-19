@@ -37,6 +37,348 @@ namespace nlfs_3
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
+// (run-time) primitives:
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// aliases:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec> using return_type			= typename Spec::return_type;
+	template<typename Spec> using arg_type				= typename Spec::arg_type;
+
+	template<typename Spec> constexpr auto return_cons		= Spec::return_cons;
+	template<typename Spec> constexpr auto lval			= Spec::lval;
+	template<typename Spec> constexpr auto rval			= Spec::rval;
+	template<typename Spec> constexpr auto car_rval			= Spec::car_rval;
+	template<typename Spec> constexpr auto cdr_rval			= Spec::cdr_rval;
+
+	//
+
+	template<typename Spec> using sign_type				= typename Spec::sign_type;
+
+	template<typename Spec> constexpr auto sign_return		= Spec::sign_return;
+	template<typename Spec> constexpr auto sign_facade		= Spec::sign_facade;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// predicates:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_not_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_less_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_less_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_greater_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) > rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_greater_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) >= rval<Spec>(arg));
+	}
+
+	//
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_value(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) == rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_not_value(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) != rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_less_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_less_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_greater_than(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) < rval<Spec>());
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_is_greater_than_or_equal(arg_type<Spec> arg)
+	{
+		return return_cons<Spec>(lval<Spec>(arg) <= rval<Spec>());
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// constants:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_constant()
+	{
+		return return_cons<Spec>();
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// arithmetic operators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_add(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_subtract(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_multiply(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_divide(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_modulo(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+	//
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_add_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) + cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_subtract_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) - cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_multiply_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) * cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_divide_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) / cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_modulo_by(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = car_rval<Spec>(arg) % cdr_rval<Spec>();
+
+		return return_cons<Spec>(arg);
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// comparative operators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_max(arg_type<Spec> arg)
+	{
+		if (lval<Spec>(arg) > rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
+		else					return return_cons<Spec>(rval<Spec>(arg));
+	}
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_min(arg_type<Spec> arg)
+	{
+		if (lval<Spec>(arg) < rval<Spec>(arg))	return return_cons<Spec>(lval<Spec>(arg));
+		else					return return_cons<Spec>(rval<Spec>(arg));
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// mutators:
+
+/***********************************************************************************************************************/
+
+	template<typename Spec>
+	constexpr return_type<Spec> sign_assign(arg_type<Spec> arg)
+	{
+		lval<Spec>(arg) = rval<Spec>(arg);
+
+		return return_cons<Spec>(arg);
+	}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+	template<auto f, typename Struct, typename Type>
+	constexpr Struct set(Type value)
+	{
+		Struct arg;
+		f(arg) = value;
+
+		return arg;
+	}
+
+/***********************************************************************************************************************/
+
+	template<typename CarType, typename CdrType>
+	struct pair_signature
+	{
+		CarType car;
+		CdrType cdr;
+
+		pair_signature() { }
+	};
+
+	//
+
+	template<typename Pair>
+	constexpr auto & pair_car(Pair & arg)		{ return arg.car; }
+
+	template<typename Pair>
+	constexpr auto & pair_cdr(Pair & arg)		{ return arg.cdr; }
+
+	//
+
+	template<typename Pair, auto Car, auto Cdr>
+	struct pair_specification
+	{
+		using sign_type				= Pair;
+
+		static constexpr auto sign_return	= Car;
+		static constexpr auto sign_facade	= set<Cdr, Pair, T_reference_type_T<f_out_type<Cdr>>>;
+
+		static constexpr auto car		= Car;
+		static constexpr auto cdr		= Cdr;
+	};
+
+/***********************************************************************************************************************/
+
+	// Function as Text version:
+
+		template<typename Spec>
+		struct car__cdr
+		{
+			using return_type			= typename Spec::sign_type &;
+			using arg_type				= typename Spec::sign_type &;
+
+			static constexpr auto lval		= Spec::car;
+			static constexpr auto rval		= Spec::cdr;
+
+			static constexpr auto return_cons	= id<return_type>;
+		};
+
+		template<typename Spec>
+		struct car__car_x_cdr
+		{
+			using return_type			= typename Spec::sign_type &;
+			using arg_type				= typename Spec::sign_type &;
+
+			static constexpr auto lval		= Spec::car;
+			static constexpr auto car_rval		= Spec::car;
+			static constexpr auto cdr_rval		= Spec::cdr;
+
+			static constexpr auto return_cons	= id<return_type>;
+		};
+
+		template<typename Spec>
+		constexpr auto sign_square = V_do_compose_opt
+		<
+			sign_assign	< car__cdr       <Spec> >,
+			sign_multiply	< car__car_x_cdr <Spec> >
+		>;
+
+		template<typename Type>
+		Type square(Type x)
+		{
+			using pair		= pair_signature	< Type, Type                           >;
+			using spec		= pair_specification	< pair, pair_car<pair>, pair_cdr<pair> >;
+
+			sign_type<spec> s	= sign_facade<spec>(x);
+
+			return sign_return<spec>(sign_square<spec>(s));
+		}
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
 // abstract signature:
 
 /***********************************************************************************************************************/

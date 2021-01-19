@@ -27,7 +27,7 @@
 */
 
 #include"A-source/0_meta_programming.hpp"
-//#include"A-source/1_higher_order_functions.hpp"
+#include"A-source/1_higher_order_functions.hpp"
 //#include"A-source/2_higher_order_continuations.hpp"
 //#include"A-source/3_signature_models.hpp"
 //#include"A-source/4_iterator_traits.hpp"
@@ -40,7 +40,7 @@
 
 namespace list_operators
 {
-	using namespace nlfs_0;//8;
+	using namespace nlfs_1;//8;
 }
 
 #endif
