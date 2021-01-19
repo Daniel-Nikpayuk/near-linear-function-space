@@ -19,81 +19,148 @@
 
 #include<cstdio>
 #include"a-source.hpp"
+//#include"b-modules.hpp"
+//#include"C-tests/prerequisites.hpp"
+
+/***********************************************************************************************************************/
+
+//	using namespace extended_numbers;
+//	using namespace ocli_testing;
+
+/***********************************************************************************************************************/
 
 	using namespace list_operators;
 
 /***********************************************************************************************************************/
 
-	// in type:
-
 /*
-		struct recursive_in_type
-		{
-			template<bool, auto Value, auto pos, auto, auto InType, auto... InTypes>
-			using in_type_cont = T_hold
-			<
-				!bool(pos),
+	int square(int x)	{ return x*x; }
+	int plus_two(int x)	{ return x+2; }
+	void print(int x)	{ printf("%d\n", x); }
 
-				T_type_U, InType,
-				S_in_type, 
-			>;
+	auto comp1		= V_compose_opt		< square   , plus_two >;
+	auto comp2		= V_compose_opt		< print    , square   >;
 
-			template<auto Value, auto pos = 0>
-			using result = T_if_then_else
-			<
-				!bool(pos), in_type_true, in_type_false
+//	using S_comp3		= S_compose_opt		< 5        , plus_two >;	// static assertion failure.
+	using S_comp3		= S_compose_opt		< plus_two , plus_two >;	// static assertion success.
+	using assert1		= assert_S_compose	< S_comp3             >;
 
-			>::template hold
-			<
-				pattern_match_function<Value>::template induct, in_type_cont, Value, pos
-			>
-		};
-
-		template<auto Value, auto pos = 0>
-		using S_in_type = T_hold
-		<
-			V_is_nullary<Value>,
-
-			void,
-
-			recursive_in_type::template result, Value, pos
-		>;
+	auto comp3		= V_value_S		< S_comp3             >;
 */
 
 /***********************************************************************************************************************/
+																
+	// Standard version:
 
-//	template<typename... Types> using type_list			= S_value_V<types_map<Types...>>; // wrong!
+//		template<typename Type> Type square(Type x) { return x*x; }
 
 /***********************************************************************************************************************/
 
-		constexpr void _id_()			{ }
-		constexpr void char_ptr(char*)		{ }
-		constexpr char c73()			{ return 73; }
-		constexpr int int_sq(int x)		{ return x*x; }
+	template<auto f, typename Struct, typename Type>
+	constexpr Struct set(Type value)
+	{
+		Struct arg;
+		f(arg) = value;
+
+		return arg;
+	}
+
+/***********************************************************************************************************************/
+
+	template<typename CarType, typename CdrType>
+	struct pair_signature
+	{
+		CarType car;
+		CdrType cdr;
+
+		pair_signature() { }
+	};
+
+	//
+
+	template<typename Pair>
+	constexpr auto & pair_car(Pair & arg)		{ return arg.car; }
+
+	template<typename Pair>
+	constexpr auto & pair_cdr(Pair & arg)		{ return arg.cdr; }
+
+	//
+
+	template<typename Pair, auto Car, auto Cdr>
+	struct pair_specification
+	{
+		using sign_type				= Pair;
+
+		static constexpr auto sign_return	= Car;
+		static constexpr auto sign_facade	= set<Cdr, Pair, T_reference_type_T<f_out_type<Cdr>>>;
+
+		static constexpr auto car		= Car;
+		static constexpr auto cdr		= Cdr;
+	};
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+	// Function as Text version:
+
+		template<typename Spec>
+		struct car__cdr
+		{
+			using return_type			= typename Spec::sign_type &;
+			using arg_type				= typename Spec::sign_type &;
+
+			static constexpr auto lval		= Spec::car;
+			static constexpr auto rval		= Spec::cdr;
+
+			static constexpr auto return_cons	= id<return_type>;
+		};
+
+		template<typename Spec>
+		struct car__car_x_cdr
+		{
+			using return_type			= typename Spec::sign_type &;
+			using arg_type				= typename Spec::sign_type &;
+
+			static constexpr auto lval		= Spec::car;
+			static constexpr auto car_rval		= Spec::car;
+			static constexpr auto cdr_rval		= Spec::cdr;
+
+			static constexpr auto return_cons	= id<return_type>;
+		};
+
+		template<typename Spec>
+		constexpr auto sign_square = V_do_compose_opt
+		<
+			sign_assign	< car__cdr       <Spec> >,
+			sign_multiply	< car__car_x_cdr <Spec> >
+		>;
+
+		template<typename Type>
+		Type square(Type x)
+		{
+			using pair		= pair_signature	< Type, Type                           >;
+			using spec		= pair_specification	< pair, pair_car<pair>, pair_cdr<pair> >;
+
+			sign_type<spec> s	= sign_facade<spec>(x);
+
+			return sign_return<spec>(sign_square<spec>(s));
+		}
 
 /***********************************************************************************************************************/
 
 	int main(int argc, char *argv[])
 	{
-		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, char&> ? "true" : "false");
-		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, void> ? "true" : "false");
-		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<char>>, void> ? "true" : "false");
-		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<void>>, char> ? "true" : "false");
-		printf("%s\n", V_equal_TxT<T_type_U<U_type_T<hold_true>>, hold_true> ? "true" : "false");
-
-	//	printf("%s\n", V_is_function<5> ? "true" : "false");
-	//	printf("%s\n", V_is_function<c73> ? "true" : "false");
-
-	//	printf("%s\n", V_is_nullary<c73> ? "true" : "false");
-	//	printf("%s\n", V_is_nullary<int_sq> ? "true" : "false");
-
-	//	printf("%s\n", V_is_unary<c73> ? "true" : "false");
-	//	printf("%s\n", V_is_unary<int_sq> ? "true" : "false");
-
-	//	printf("%s\n", V_equal_TxT<f_out_type<_id_>, void> ? "true" : "false");
-	//	printf("%s\n", V_equal_TxT<f_out_type<c73>, void> ? "true" : "false");
-	//	printf("%s\n", V_equal_TxT<f_out_type<int_sq>, int> ? "true" : "false");
+		printf("%d\n", square(5));	// prints: 25
 
 		return 0;
 	}
+
+/***********************************************************************************************************************/
+
+//		print(comp1(5));	// prints: 49
+//		comp2(7);		// prints: 49
+//		print(comp3(11));	// prints: 15
+
+//		print_number(39275);
 
