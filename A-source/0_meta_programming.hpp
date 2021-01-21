@@ -176,7 +176,7 @@ namespace nlfs_0
 
 // hold:
 
-	struct hold_true
+	struct hold_ante
 	{
 		// value:
 
@@ -186,7 +186,7 @@ namespace nlfs_0
 			using T_hold_TxGxT = Antecedent;
 	};
 
-	struct hold_false
+	struct hold_conse
 	{
 		// value:
 
@@ -205,7 +205,7 @@ namespace nlfs_0
 		<
 			Predicate,
 
-				hold_true, hold_false
+				hold_ante, hold_conse
 
 		>::template T_hold_TxGxT
 		<
@@ -227,179 +227,89 @@ namespace nlfs_0
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// stem:
-
-/***********************************************************************************************************************/
-
-// true:
-
-	struct colist_true
+	struct template_list_colist
 	{
-		// hold:
-
+		struct colist_halt
+		{
 			template
 			<
-			// true:
-
+				typename Colist,
+			// halt:
 				typename Default1,
-
-			// false:
-
-				template
-				<
-					typename,
-
-					auto, auto,			auto, auto,			typename,
-
-					template<auto, auto> class,	template<auto, auto> class,
-
-					template<auto, auto> class...
-
-				> class Suboperator, typename Operator,
-
+			// cont:
 				auto Value11, auto Value12,		auto Value21, auto Value22,	typename Default2,
 
 				template<auto, auto> class... Aliases
 			>
-			using T_hold_Bs = Default1;
+			using result = Default1;
+		};
 
-		// dihold:
-
-			template
-			<
-			// true:
-
-				template<auto, auto> class Alias, auto Value11, auto Value12,
-
-			// false:
-
+		struct colist_cont
+		{
+			struct dihold_halt
+			{
 				template
 				<
-					auto, auto,			auto, auto,			typename,
+					typename Colist,
+				// halt:
+					template<auto, auto> class Break, auto Value11, auto Value12,
+				// cont:
+					auto Value21, auto Value22,		auto Value31, auto Value32,	typename Default,
 
-					template<auto, auto> class...
+					template<auto, auto> class... Aliases
+				>
+				using result = Break<Value11, Value12>;
+			};
 
-				> class SubOperator,
+			struct dihold_cont
+			{
+				template
+				<
+					typename Colist,
+				// halt:
+					template<auto, auto> class Break, auto Value11, auto Value12,
+				// cont:
+					auto Value21, auto Value22,		auto Value31, auto Value32,	typename Default,
 
-				auto Value21, auto Value22,		auto Value31, auto Value32,	typename Default,
+					template<auto, auto> class... Aliases
+				>
+				using result = typename Colist::template result
+				<
+					Value21, Value22,	Value31, Value32,	Default,
 
-				template<auto, auto> class... Aliases
-			>
-			using T_dihold_Bs = Alias<Value11, Value12>;
-	};
-
-/***********************************************************************************************************************/
-
-// false:
-
-	struct colist_false
-	{
-		// hold:
+					Aliases...
+				>;
+			};
 
 			template
 			<
-			// true:
-
+				typename Colist,
+			// halt:
 				typename Default1,
-
-			// false:
-
-				template
-				<
-					typename,
-
-					auto, auto,			auto, auto,			typename,
-
-					template<auto, auto> class,	template<auto, auto> class,
-
-					template<auto, auto> class...
-
-				> class Suboperator, typename Operator,
-
+			// cont:
 				auto Value11, auto Value12,		auto Value21, auto Value22,	typename Default2,
 
-				template<auto, auto> class Alias1,	template<auto, auto> class Alias2,
+				template<auto, auto> class Policy,	template<auto, auto> class Break,
 
 				template<auto, auto> class... Aliases
 			>
-			using T_hold_Bs = Suboperator
+			using result = typename T_if_then_else
 			<
-				Operator,
+				V_value_S<Policy<Value11, Value12>>,
 
+					dihold_halt, dihold_cont
+
+			>::template result
+			<
+				Colist,
+			// halt:
+				Break, Value21, Value22,
+			// cont:
 				Value11, Value12,	Value21, Value22,	Default2,
 
-				Alias1,			Alias2,
-
 				Aliases...
 			>;
-
-		// dihold:
-
-			template
-			<
-			// true:
-
-				template<auto, auto> class Alias, auto Value11, auto Value12,
-
-			// false:
-
-				template
-				<
-					auto, auto,			auto, auto,			typename,
-
-					template<auto, auto> class...
-
-				> class SubOperator,
-
-				auto Value21, auto Value22,		auto Value31, auto Value32,	typename Default,
-
-				template<auto, auto> class... Aliases
-			>
-			using T_dihold_Bs = SubOperator
-			<
-				Value21, Value22,	Value31, Value32,	Default,
-
-				Aliases...
-			>;
-	};
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// colist:
-
-	struct T__colist__Bs
-	{
-		template
-		<
-			typename Colist,
-
-			auto Value11, auto Value12,		auto Value21, auto Value22,	typename Default,
-
-			template<auto, auto> class Policy,	template<auto, auto> class Break,
-
-			template<auto, auto> class... Aliases
-		>
-		using loop = typename T_if_then_else
-		<
-			V_value_S<Policy<Value11, Value12>>,
-
-				colist_true, colist_false
-
-		>::template T_dihold_Bs
-		<
-		// true:
-
-			Break, Value21, Value22,
-
-		// false:
-
-			Colist::template result,
-
-			Value11, Value12,	Value21, Value22,	Default,
-
-			Aliases...
-		>;
+		};
 
 		template
 		<
@@ -411,18 +321,14 @@ namespace nlfs_0
 		<
 			V_empty_Bs<Aliases...>,
 
-				colist_true, colist_false
+				colist_halt, colist_cont
 
-		>::template T_hold_Bs
+		>::template result
 		<
-		// true:
-
+			template_list_colist,
+		// halt:
 			Default,
-
-		// false:
-
-			loop, T__colist__Bs,
-
+		// cont:
 			Value11, Value12,	Value21, Value22,	Default,
 
 			Aliases...
@@ -439,7 +345,7 @@ namespace nlfs_0
 		auto Value21, auto Value22,
 		template<auto, auto> class... Aliases
 	>
-	using T_colist_Bs = typename T__colist__Bs::template result
+	using T_colist_Bs = typename template_list_colist::template result
 	<
 		Value11, Value12, Value21, Value22, _NA_, Aliases...
 	>;
@@ -456,7 +362,7 @@ namespace nlfs_0
 	>
 	constexpr auto V_colist_Bs = V_value_S
 	<
-		typename T__colist__Bs::template result
+		typename template_list_colist::template result
 		<
 			Value11, Value12, Value21, Value22, _NA_, Aliases...
 		>
@@ -531,6 +437,8 @@ namespace nlfs_0
 
 	template<auto f> constexpr bool V_is_a_function				= V_value_S<S_is_a_function<f>>;
 
+/***********************************************************************************************************************/
+
 // not match:
 
 	template<bool Match, auto, auto, typename, typename...>
@@ -547,6 +455,8 @@ namespace nlfs_0
 
 	template<auto f> constexpr bool V_not_a_function			= V_value_S<S_not_a_function<f>>;
 
+/***********************************************************************************************************************/
+
 // arity:
 
 	template<bool, auto, auto, typename Type, typename, typename... InTypes>
@@ -560,6 +470,8 @@ namespace nlfs_0
 
 	template<auto f, typename SizeType = unsigned>
 	constexpr bool V_function_arity = V_value_S<S_function_arity<f, SizeType>>;
+
+/***********************************************************************************************************************/
 
 // is nullary:
 
@@ -593,6 +505,8 @@ namespace nlfs_0
 
 	template<auto f> constexpr bool V_not_nullary_function		= V_value_S<S_not_nullary_function<f>>;
 
+/***********************************************************************************************************************/
+
 // is unary:
 
 	template<bool, auto, auto, typename, typename... InTypes>
@@ -624,6 +538,8 @@ namespace nlfs_0
 	template<auto  , auto g> using S_right_not_unary_function	= S_not_unary_function<g>;
 
 	template<auto f> constexpr bool V_not_unary_function		= V_value_S<S_not_unary_function<f>>;
+
+/***********************************************************************************************************************/
 
 // is binary:
 
@@ -657,56 +573,56 @@ namespace nlfs_0
 
 	template<auto f> constexpr bool V_not_binary_function		= V_value_S<S_not_binary_function<f>>;
 
+/***********************************************************************************************************************/
+
 // out type:
 
 	template<bool, auto, auto, typename OutType, typename...>
 	using func_out_type_cont = OutType;
 
+	// (convenience alias):
+
 	template<auto f, auto = _na_>
-	using T_function_out_type = typename pattern_match_function<f>::template induct
+	using f_out_type = typename pattern_match_function<f>::template induct
 	<
 		func_out_type_cont, _na_
 	>;
 
-	// (convenience alias):
+	template<auto f, auto = _na_> using T_function_out_type = f_out_type<f>;
 
-		template<auto f, auto = _na_>
-		using f_out_type = typename pattern_match_function<f>::template induct
-		<
-			func_out_type_cont, _na_
-		>;
+/***********************************************************************************************************************/
 
 // in type:
 
-	struct func_in_type_at
+	struct typename_list_at
 	{
-		struct in_type_true
+		struct at_halt
 		{
-			template<typename, auto pos, typename InType, typename... InTypes>
-			using result = InType;
+			template<typename, auto pos, typename Type, typename... Types>
+			using result = Type;
 		};
 
-		struct in_type_false
+		struct at_cont
 		{
-			template<typename At, auto pos, typename InType, typename... InTypes>
+			template<typename At, auto pos, typename Type, typename... Types>
 			using result = typename At::template result
 			<
-				pos - 1, InTypes...
+				pos - 1, Types...
 			>;
 		};
 
-		template<auto pos, typename... InTypes>
+		template<auto pos, typename... Types>
 		using result = typename T_if_then_else
 		<
 			!bool(pos),
 
-				in_type_true, in_type_false
+				at_halt, at_cont
 
-		>::template result<func_in_type_at, pos, InTypes...>;
+		>::template result<typename_list_at, pos, Types...>;
 	};
 
 	template<bool, auto, auto pos, typename, typename... InTypes>
-	using func_in_type_cont = typename func_in_type_at::template result
+	using func_in_type_cont = typename typename_list_at::template result
 	<
 		pos, InTypes...
 	>;
@@ -717,8 +633,10 @@ namespace nlfs_0
 		func_in_type_cont, pos
 	>;
 
+	// (convenience alias):
+
 	template<auto f, auto pos = 0>
-	using T_function_in_type = T_colist_Bs
+	using f_in_type = T_colist_Bs
 	<
 		f, _na_,			f, pos,
 
@@ -726,16 +644,9 @@ namespace nlfs_0
 		otherwise,			return_in_type
 	>;
 
-	// (convenience alias):
+	template<auto f, auto = _na_> using T_function_in_type = f_in_type<f>;
 
-		template<auto f, auto pos = 0>
-		using f_in_type = T_colist_Bs
-		<
-			f, _na_,			f, pos,
-
-			S_is_nullary_function,		return_void,
-			otherwise,			return_in_type
-		>;
+/***********************************************************************************************************************/
 
 // composition:
 

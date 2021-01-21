@@ -541,15 +541,56 @@ namespace nlfs_1
 	template<auto f, auto g>
 	constexpr auto V_compose_opt = V_value_S<S_compose_opt<f, g>>;
 
-/***********************************************************************************************************************/
-
-// do compose:
+	// (convenience alias):
 
 	template<auto f, auto g>
 	using S_do_compose_opt = S_compose_opt<g, f>;
 
 	template<auto f, auto g>
 	constexpr auto V_do_compose_opt = V_value_S<S_compose_opt<g, f>>;
+
+/***********************************************************************************************************************/
+
+// chain compose:
+
+	struct value_list_compose
+	{
+		struct compose_halt
+		{
+			template<typename, template<auto, auto> class, auto f, auto... fs>
+			static constexpr auto result = f;
+		};
+
+		struct compose_cont
+		{
+			template<typename Chain, template<auto, auto> class compose, auto f, auto g, auto... fs>
+			static constexpr auto result = Chain::template result
+			<
+				compose, V_value_S<compose<f, g>>, fs...
+			>;
+		};
+
+		template<template<auto, auto> class compose, auto f, auto... fs>
+		static constexpr auto result = T_if_then_else
+		<
+			!bool(sizeof...(fs)),
+
+				compose_halt, compose_cont
+
+		>::template result<value_list_compose, compose, f, fs...>;
+	};
+
+	template<auto f, auto... fs>
+	constexpr auto V_chain_compose_opt = value_list_compose::template result
+	<
+		S_compose_opt, f, fs...
+	>;
+
+	template<auto f, auto... fs>
+	constexpr auto V_do_chain_compose_opt = value_list_compose::template result
+	<
+		S_do_compose_opt, f, fs...
+	>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -560,32 +601,135 @@ namespace nlfs_1
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-/*
-	template<typename...> struct arg_list	{ };
+// keywords:
 
-	template<typename, typename> struct pattern_match_subcompose;
+	template<typename...> struct arg_list		{ };
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// type list right:
+
+	struct type_list_right
+	{
+		struct right_halt
+		{
+			template<typename, template<typename...> class ListName, auto, typename... Types>
+			using result = ListName<Types...>;
+		};
+
+		struct right_cont
+		{
+			template<typename Right,
+				template<typename...> class ListName, auto pos, typename Type, typename... Types>
+			using result = typename Right::template result
+			<
+				ListName, pos - 1, Types...
+			>;
+		};
+
+		template<template<typename...> class ListName, auto pos, typename... Types>
+		using result = typename T_if_then_else
+		<
+			!bool(pos),
+
+				right_halt, right_cont
+
+		>::template result<type_list_right, ListName, pos, Types...>;
+	};
+
+	template<bool, auto, auto pos, typename, typename... InTypes>
+	using func_in_type_right_cont = typename type_list_right::template result
+	<
+		arg_list, pos, InTypes...
+	>;
+
+	template<auto f, auto pos>
+	using f_in_type_right = typename pattern_match_function<f>::template induct
+	<
+		func_in_type_right_cont, pos + 1
+	>;
+
+	template<auto f>
+	using f_in_type_list = typename pattern_match_function<f>::template induct
+	<
+		func_in_type_right_cont, 0
+	>;
+
+/***********************************************************************************************************************/
+
+// typename list split left:
+
+	struct type_list_left
+	{
+		struct left_halt
+		{
+			template<typename, template<typename...> class ListName, auto rpos, auto lpos, typename... Types>
+			using result = type_list_right::template result
+			<
+				ListName, rpos, Types...
+			>;
+		};
+
+		struct left_cont
+		{
+			template<typename Left,
+				template<typename...> class ListName, auto rpos, auto lpos, typename Type, typename... Types>
+			using result = typename Left::template result
+			<
+				ListName, rpos, lpos - 1, Types..., Type
+			>;
+		};
+
+		template<template<typename...> class ListName, auto rpos, auto lpos, typename... Types>
+		using result = typename T_if_then_else
+		<
+			!bool(lpos),
+
+				left_halt, left_cont
+
+		>::template result<type_list_left, ListName, rpos, lpos, Types...>;
+	};
+
+	template<bool, auto, auto pos, typename, typename... InTypes>
+	using func_in_type_left_cont = typename type_list_left::template result
+	<
+		arg_list, (sizeof...(InTypes) - pos), pos, InTypes...
+	>;
+
+	template<auto f, auto pos>
+	using f_in_type_left = typename pattern_match_function<f>::template induct
+	<
+		func_in_type_left_cont, pos
+	>;
+
+/***********************************************************************************************************************/
+
+	template<typename, typename, typename> struct pattern_match_subcompose;
 
 	template
 	<
-		template<typename...> class ListName1, typename... FTypes1,
-		template<typename...> class ListName2, typename... FTypes2
+		template<typename...> class FArgs1, typename... FTypes1,
+		template<typename...> class GArgs , typename... GTypes ,
+		template<typename...> class FArgs2, typename... FTypes2
 	>
-	struct pattern_match_subcompose<ListName1<FTypes1...>, ListName2<FTypes2...>>
+	struct pattern_match_subcompose<FArgs1<FTypes1...>, GArgs<GTypes...>, FArgs2<FTypes2...>>
 	{
-		template<auto f, auto g, typename... GTypes>
+		template<auto f, auto g>
 		static constexpr f_out_type<f> result(FTypes1... f_args1, GTypes... g_args, FTypes2... f_args2)
 		{
 			return f(f_args1..., g(g_args...), f_args2...);
 		}
 	};
 
-	template<auto f, auto g>
-	constexpr auto V_subcompose_opt = pattern_match_subcompose
+	template<auto f, auto g, auto pos>
+	constexpr auto V_subcompose = pattern_match_subcompose
 	<
-		arg_list1, arg_list2, arg_list3
+		f_in_type_left<f, pos>,
+		f_in_type_list<g>,
+		f_in_type_right<f, pos>
 
 	>::template result<f, g>;
-*/
 
 /***********************************************************************************************************************/
 

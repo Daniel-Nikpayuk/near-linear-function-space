@@ -36,29 +36,43 @@
 	void print(int x)						{ printf("%d\n", x); }
 	constexpr char c73()						{ return 73; }
 	constexpr int plus_two(int x)					{ return x+2; }
-	constexpr int local_add(int x, int y)				{ return x+y; }
+	constexpr int add2(int x, int y)				{ return x+y; }
+	constexpr int multiply2(int x, int y)				{ return x*y; }
 	template<typename Type> constexpr Type square(Type x)		{ return x*x; }
 
-	constexpr auto func0						= V_compose_opt<square<int>, plus_two>;
-	constexpr auto func1						= V_compose_opt<square<int>, local_add>;
-	constexpr auto func2						= V_compose_opt<plus_two, c73>;
-	constexpr auto func3						= V_compose_opt<print, c73>;
+//	constexpr auto func0						= V_compose_opt<square<int>, plus_two>;
+//	constexpr auto func1						= V_compose_opt<square<int>, local_add>;
+//	constexpr auto func2						= V_compose_opt<plus_two, c73>;
+//	constexpr auto func3						= V_compose_opt<print, c73>;
 
-//	constexpr int multiply2(int x, int y)				{ return x*y; }
-//	constexpr int add3(int x, int y, int z)				{ return x+y+z; }
+//	constexpr auto func4						= V_do_chain_compose_opt
+//									<
+//										square<int>,
+//										plus_two,
+//										square<int>,
+//										print
+//									>;
 
-//	constexpr auto curried_func					= pattern_match_compose
-//									<arg_list1, arg_list2, arg_list3>::template
-//									result<add3, multiply2>;
+	constexpr auto add3						= V_subcompose<add2, add2, 1>;	
+	constexpr auto func5						= V_subcompose<add3, multiply2, 1>;
 
 /***********************************************************************************************************************/
 
 	int main(int argc, char *argv[])
 	{
-		printf("%d\n", func0(5));			// prints: 49
-		printf("%d\n", func1(5, 7));			// prints: 144
-		printf("%d\n", func2());			// prints: 75
-		func3();					// prints: 73
+	//	printf("%d\n", func0(5));			// prints: 49
+	//	printf("%d\n", func1(5, 7));			// prints: 144
+	//	printf("%d\n", func2());			// prints: 75
+	//	func3();					// prints: 73
+
+//		func4(5);					// prints: 729
+		printf("%d\n", func5(1, 2, 3, 4));		// prints: 11
+
+	//	printf("%d\n", list_length<left_args>);
+	//	printf("%s\n", V_equal_TxT<list_arg<left_args>, int> ? "true" : "false");
+
+	//	printf("%d\n", list_length<right_args>);
+	//	printf("%s\n", V_equal_TxT<list_arg<right_args>, short> ? "true" : "false");
 
 		return 0;
 	}
