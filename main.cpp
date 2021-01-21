@@ -33,49 +33,23 @@
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto g, typename... Types>
-	constexpr f_out_type<f> u_compose_u(Types... args)
-		{ return f(g(args...)); }
+	void print(int x)						{ printf("%d\n", x); }
+	constexpr char c73()						{ return 73; }
+	constexpr int plus_two(int x)					{ return x+2; }
+	constexpr int local_add(int x, int y)				{ return x+y; }
+	template<typename Type> constexpr Type square(Type x)		{ return x*x; }
 
-	constexpr int square(int x)		{ return x*x; }
-	constexpr int plus_two(int x)		{ return x+2; }
-	constexpr int local_add(int x, int y)	{ return x+y; }
+	constexpr auto func0						= V_compose_opt<square<int>, plus_two>;
+	constexpr auto func1						= V_compose_opt<square<int>, local_add>;
+	constexpr auto func2						= V_compose_opt<plus_two, c73>;
+	constexpr auto func3						= V_compose_opt<print, c73>;
 
-	constexpr auto func0			= u_compose_u<square, plus_two, int>;
-	constexpr auto func1			= u_compose_u<square, local_add, int, int>;
+//	constexpr int multiply2(int x, int y)				{ return x*y; }
+//	constexpr int add3(int x, int y, int z)				{ return x+y+z; }
 
-	//
-
-
-
-	template<typename, typename, typename> struct pattern_match_compose;
-
-	template
-	<
-		template<typename...> class ListName1, typename... Types1,
-		template<typename...> class ListName2, typename... Types2,
-		template<typename...> class ListName3, typename... Types3
-	>
-	struct pattern_match_compose<ListName1<Types1...>, ListName2<Types2...>, ListName3<Types3...>>
-	{
-		template<auto f_3, auto g_2>
-		static constexpr f_out_type<f_3> result(Types1... args1, Types2... args2, Types3... args3)
-		{
-			return f_3(args1..., g_2(args2...), args3...);
-		}
-	};
-
-	template<typename...> struct arg_list	{ };
-
-	using arg_list1				= arg_list<int>;
-	using arg_list2				= arg_list<int, int>;
-	using arg_list3				= arg_list<int>;
-
-	constexpr int multiply2(int x, int y)	{ return x*y; }
-	constexpr int add3(int x, int y, int z)	{ return x+y+z; }
-
-	constexpr auto curried_func		= pattern_match_compose<arg_list1, arg_list2, arg_list3>::template
-							result<add3, multiply2>;
+//	constexpr auto curried_func					= pattern_match_compose
+//									<arg_list1, arg_list2, arg_list3>::template
+//									result<add3, multiply2>;
 
 /***********************************************************************************************************************/
 
@@ -83,8 +57,8 @@
 	{
 		printf("%d\n", func0(5));			// prints: 49
 		printf("%d\n", func1(5, 7));			// prints: 144
-
-		printf("%d\n", curried_func(1, 2, 3, 4));	// prints: 11
+		printf("%d\n", func2());			// prints: 75
+		func3();					// prints: 73
 
 		return 0;
 	}
@@ -92,10 +66,6 @@
 /***********************************************************************************************************************/
 
 /*
-	int square(int x)	{ return x*x; }
-	int plus_two(int x)	{ return x+2; }
-	void print(int x)	{ printf("%d\n", x); }
-
 	auto comp1		= V_compose_opt		< square   , plus_two >;
 	auto comp2		= V_compose_opt		< print    , square   >;
 
@@ -111,6 +81,8 @@
 //		print(comp1(5));	// prints: 49
 //		comp2(7);		// prints: 49
 //		print(comp3(11));	// prints: 15
+
+//		printf("%d\n", curried_func(1, 2, 3, 4));	// prints: 11
 
 //		print_number(39275);
 

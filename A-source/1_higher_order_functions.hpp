@@ -19,14 +19,6 @@
 
 // higher order functions:
 
-/*
-	opt - optimizer
-
-	n   - nullary
-	u   - unary
-	b   - binary
-*/
-
 /***********************************************************************************************************************/
 
 namespace nlfs_1
@@ -53,29 +45,29 @@ namespace nlfs_1
 
 /***********************************************************************************************************************/
 
-	template<auto f> constexpr bool V_out_type_equals_void			= V_equal_TxT<f_out_type<f>, void>;
-	template<auto f, auto = _na_> using S_out_type_equals_void		= S_equal_TxT<f_out_type<f>, void>;
-	template<auto f, auto  > using S_left_out_type_equals_void		= S_out_type_equals_void<f>;
-	template<auto  , auto g> using S_right_out_type_equals_void		= S_out_type_equals_void<g>;
+	template<auto f> constexpr bool V_out_type_is_void		= V_equal_TxT<f_out_type<f>, void>;
+	template<auto f, auto = _na_> using S_out_type_is_void		= S_equal_TxT<f_out_type<f>, void>;
+	template<auto f, auto  > using S_left_out_type_is_void		= S_out_type_is_void<f>;
+	template<auto  , auto g> using S_right_out_type_is_void		= S_out_type_is_void<g>;
 
 	//
 
-	template<auto f> constexpr bool V_out_type_not_void			= ! V_equal_TxT<f_out_type<f>, void>;
-	template<auto f, auto = _na_> using S_out_type_not_void			= S_boolean<V_out_type_not_void<f>>;
-	template<auto f, auto  > using S_left_out_type_not_void			= S_out_type_not_void<f>;
-	template<auto  , auto g> using S_right_out_type_not_void		= S_out_type_not_void<g>;
+	template<auto f> constexpr bool V_out_type_not_void		= ! V_equal_TxT<f_out_type<f>, void>;
+	template<auto f, auto = _na_> using S_out_type_not_void		= S_boolean<V_out_type_not_void<f>>;
+	template<auto f, auto  > using S_left_out_type_not_void		= S_out_type_not_void<f>;
+	template<auto  , auto g> using S_right_out_type_not_void	= S_out_type_not_void<g>;
 
 /***********************************************************************************************************************/
 
-	template<auto f, auto = _na_> using S_in_type_equals_void		= S_boolean<V_is_nullary_function<f>>;
-	template<auto f, auto  > using S_left_in_type_equals_void		= S_in_type_equals_void<f>;
-	template<auto  , auto g> using S_right_in_type_equals_void		= S_in_type_equals_void<g>;
+	template<auto f, auto = _na_> using S_in_type_is_void		= S_boolean<V_is_nullary_function<f>>;
+	template<auto f, auto  > using S_left_in_type_is_void		= S_in_type_is_void<f>;
+	template<auto  , auto g> using S_right_in_type_is_void		= S_in_type_is_void<g>;
 
 /***********************************************************************************************************************/
 
-	template<auto f> constexpr bool V_is_nfs	= V_out_type_equals_void<f>  &&  V_not_nullary_function<f>;
-	template<auto f> constexpr bool V_is_ufn	= V_out_type_not_void<f>     &&  V_is_nullary_function<f>;
-	template<auto f> constexpr bool V_is_ufs	= V_out_type_not_void<f>     &&  V_not_nullary_function<f>;
+	template<auto f> constexpr bool V_is_nfu	= V_out_type_is_void<f>   &&  V_is_unary_function<f>;
+	template<auto f> constexpr bool V_is_ufu	= V_out_type_not_void<f>  &&  V_is_unary_function<f>;
+	template<auto f> constexpr bool V_is_ufs	= V_out_type_not_void<f>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -215,7 +207,7 @@ namespace nlfs_1
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
-		S_out_type_equals_void,		return_false,
+		S_out_type_is_void,		return_false,
 		S_not_unary_function,		return_false,
 		otherwise,			S_equals_id
 	>;
@@ -256,37 +248,10 @@ namespace nlfs_1
 
 // keywords:
 
-	constexpr void _car_()							{ }	// (left projection)
-	constexpr void _cdr_()							{ }	// (right projection)
+	// _car_ , _cdr_
 
-	//
-
-	template<auto = _na_, auto = _na_> using return_car_keyword		= S_value_V<_car_>;
-	template<auto = _na_, auto = _na_> using return_cdr_keyword		= S_value_V<_cdr_>;
-
-/***********************************************************************************************************************/
-
-	template<auto f> constexpr bool V_is_car_keyword			= V_equal_VxV<f, _car_>;
-	template<auto f, auto = _na_> using S_is_car_keyword			= S_equal_VxV<f, _car_>;
-
-	template<auto f, auto  > using S_left_is_car_keyword			= S_is_car_keyword<f>;
-	template<auto  , auto g> using S_right_is_car_keyword			= S_is_car_keyword<g>;
-	template<auto f, auto g> using S_both_are_car_keyword			= S_boolean_and
-	<
-		V_is_car_keyword<f>, V_is_car_keyword<g>
-	>;
-
-	//
-
-	template<auto f> constexpr bool V_is_cdr_keyword			= V_equal_VxV<f, _cdr_>;
-	template<auto f, auto = _na_> using S_is_cdr_keyword			= S_equal_VxV<f, _cdr_>;
-
-	template<auto f, auto  > using S_left_is_cdr_keyword			= S_is_cdr_keyword<f>;
-	template<auto  , auto g> using S_right_is_cdr_keyword			= S_is_cdr_keyword<g>;
-	template<auto f, auto g> using S_both_are_cdr_keyword			= S_boolean_and
-	<
-		V_is_cdr_keyword<f>, V_is_cdr_keyword<g>
-	>;
+	// Not applicable : In the general case, type inference will
+	//                  fail for whichever argument isn't used.
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -328,7 +293,7 @@ namespace nlfs_1
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
-		S_out_type_equals_void,		return_false,
+		S_out_type_is_void,		return_false,
 		S_not_binary_function,		return_false,
 		otherwise,			S_equals_car
 	>;
@@ -340,22 +305,6 @@ namespace nlfs_1
 	template<auto f, auto g> using S_both_are_car_func			= S_boolean_and
 	<
 		V_is_car_func<f>, V_is_car_func<g>
-	>;
-
-	//
-
-	template<auto f, auto = _na_> using S_is_car_keyword_or_func		= S_boolean_or
-	<
-		V_is_car_keyword<f>, V_is_car_func<f>
-	>;
-
-	template<auto f, auto = _na_> constexpr bool V_is_car_keyword_or_func	= V_value_S<S_is_car_keyword_or_func<f>>;
-
-	template<auto f, auto  > using S_left_is_car_keyword_or_func		= S_is_car_keyword_or_func<f>;
-	template<auto  , auto g> using S_right_is_car_keyword_or_func		= S_is_car_keyword_or_func<g>;
-	template<auto f, auto g> using S_both_are_car_keyword_or_func		= S_boolean_and
-	<
-		V_is_car_keyword_or_func<f>, V_is_car_keyword_or_func<g>
 	>;
 
 /***********************************************************************************************************************/
@@ -372,7 +321,7 @@ namespace nlfs_1
 		f, _na_,			f, _na_,
 
 		S_not_a_function,		return_false,
-		S_out_type_equals_void,		return_false,
+		S_out_type_is_void,		return_false,
 		S_not_binary_function,		return_false,
 		otherwise,			S_equals_cdr
 	>;
@@ -386,22 +335,6 @@ namespace nlfs_1
 		V_is_cdr_func<f>, V_is_cdr_func<g>
 	>;
 
-	//
-
-	template<auto f, auto = _na_> using S_is_cdr_keyword_or_func		= S_boolean_or
-	<
-		V_is_cdr_keyword<f>, V_is_cdr_func<f>
-	>;
-
-	template<auto f, auto = _na_> constexpr bool V_is_cdr_keyword_or_func	= V_value_S<S_is_cdr_keyword_or_func<f>>;
-
-	template<auto f, auto  > using S_left_is_cdr_keyword_or_func		= S_is_cdr_keyword_or_func<f>;
-	template<auto  , auto g> using S_right_is_cdr_keyword_or_func		= S_is_cdr_keyword_or_func<g>;
-	template<auto f, auto g> using S_both_are_cdr_keyword_or_func		= S_boolean_and
-	<
-		V_is_cdr_keyword_or_func<f>, V_is_cdr_keyword_or_func<g>
-	>;
-
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -411,65 +344,68 @@ namespace nlfs_1
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
-// unary:
+// (binary) optimizations:
+
+	// n,car:
+
+		template<auto f, typename Type1, typename Type2>
+		constexpr void n_compose_car(Type1 arg1, Type2 arg2) { f(arg1); }
+
+		template<bool, auto g, auto f, typename, typename InType1, typename InType2>
+		using func_n_compose_car_cont = S_value_V<n_compose_car<f, InType1, InType2>>;
+
+		template<auto f, auto g>
+		using return_n_compose_car = typename pattern_match_function<g>::template induct
+		<
+			func_n_compose_car_cont, f
+		>;
+
+	// n,cdr:
+
+		template<auto f, typename Type1, typename Type2>
+		constexpr void n_compose_cdr(Type1 arg1, Type2 arg2) { f(arg2); }
+
+		template<bool, auto g, auto f, typename, typename InType1, typename InType2>
+		using func_n_compose_cdr_cont = S_value_V<n_compose_cdr<f, InType1, InType2>>;
+
+		template<auto f, auto g>
+		using return_n_compose_cdr = typename pattern_match_function<g>::template induct
+		<
+			func_n_compose_cdr_cont, f
+		>;
+
+	// u,car:
+
+		template<auto f, typename Type1, typename Type2>
+		constexpr f_out_type<f> u_compose_car(Type1 arg1, Type2 arg2) { return f(arg1); }
+
+		template<bool, auto g, auto f, typename, typename InType1, typename InType2>
+		using func_u_compose_car_cont = S_value_V<u_compose_car<f, InType1, InType2>>;
+
+		template<auto f, auto g>
+		using return_u_compose_car = typename pattern_match_function<g>::template induct
+		<
+			func_u_compose_car_cont, f
+		>;
+
+	// u,cdr:
+
+		template<auto f, typename Type1, typename Type2>
+		constexpr f_out_type<f> u_compose_cdr(Type1 arg1, Type2 arg2) { return f(arg2); }
+
+		template<bool, auto g, auto f, typename, typename InType1, typename InType2>
+		using func_u_compose_cdr_cont = S_value_V<u_compose_cdr<f, InType1, InType2>>;
+
+		template<auto f, auto g>
+		using return_u_compose_cdr = typename pattern_match_function<g>::template induct
+		<
+			func_u_compose_cdr_cont, f
+		>;
 
 /***********************************************************************************************************************/
 
-/*
-	template<auto f, auto g>
-	constexpr void	n_compose_n
-			(
-			)							{ f(g()); }
+// assertions:
 
-	template<auto f, auto g>
-	constexpr void	n_compose_u
-			(
-				f_in_type<g> arg
-			)							{ f(g(arg)); }
-
-	template<auto f, auto g>
-	constexpr void	n_compose_b
-			(
-				f_car_in_type<g> arg1,
-				f_cdr_in_type<g> arg2
-			)							{ f(g(arg1, arg2)); }
-
-	//
-
-	template<auto f, auto g>
-	constexpr f_out_type<f> u_compose_n
-				(
-				)						{ return f(g()); }
-
-	template<auto f, auto g>
-	constexpr f_out_type<f> u_compose_u
-				(
-					f_in_type<g> arg
-				)						{ return f(g(arg)); }
-
-	template<auto f, auto g>
-	constexpr f_out_type<f> u_compose_b
-				(
-					f_car_in_type<g> arg1,
-					f_cdr_in_type<g> arg2
-				)						{ return f(g(arg1, arg2)); }
-*/
-
-/***********************************************************************************************************************/
-
-/*
-	template<auto f, auto g> using return_n_compose_n			= S_value_V<n_compose_n<f, g>>;
-	template<auto f, auto g> using return_n_compose_u			= S_value_V<n_compose_u<f, g>>;
-	template<auto f, auto g> using return_n_compose_b			= S_value_V<n_compose_b<f, g>>;
-
-	template<auto f, auto g> using return_u_compose_n			= S_value_V<u_compose_n<f, g>>;
-	template<auto f, auto g> using return_u_compose_u			= S_value_V<u_compose_u<f, g>>;
-	template<auto f, auto g> using return_u_compose_b			= S_value_V<u_compose_b<f, g>>;
-*/
-
-/***********************************************************************************************************************/
-
-/*
 	struct left_not_a_func_assertion
 	{
 		template<bool Value>
@@ -505,35 +441,41 @@ namespace nlfs_1
 	template<auto, auto> using return_left_not_a_func_assertion		= left_not_a_func_assertion;
 	template<auto, auto> using return_right_not_a_func_assertion		= right_not_a_func_assertion;
 	template<auto, auto> using return_not_valid_composition_assertion	= not_valid_composition_assertion;
-*/
+
+/***********************************************************************************************************************/
+
+// try:
+
+	template<auto f, auto g>
+	using try_n_compose_s_but_return_left_function = return_function
+	<
+		f, V_value_S<return_n_compose_s<f, g>>
+	>;
+
+	template<auto f, auto g>
+	using try_u_compose_s_but_return_left_function = return_function
+	<
+		f, V_value_S<return_u_compose_s<f, g>>
+	>;
+
+	template<auto f, auto g>
+	using try_u_compose_s_but_return_right_function = return_function
+	<
+		g, V_value_S<return_u_compose_s<f, g>>
+	>;
 
 /***********************************************************************************************************************/
 
 	// potential:
 
-	//	n func u   o  u func n  -->  n func n
-	//	n func u   o  u func u  -->  n func u
-	//	n func u   o  u func b  -->  n func b
+	//	n func u   o  u func s  -->  n func s
+	//	u func u   o  u func s  -->  u func s
 
-	//	u func u   o  u func n  -->  u func n
-	//	u func u   o  u func u  -->  u func u
-	//	u func u   o  u func b  -->  u func b
-
-/*
 	template<auto f, auto g>
 	using S_not_valid_composition = S_boolean_not
 	<
-		(
-			  V_is_nfu<f> &&
-			( V_is_ufn<g> || V_is_ufu<g> || V_is_ufb<g> )
-		)
-		  ||
-		(
-			  V_is_ufu<f> &&
-			( V_is_ufn<g> || V_is_ufu<g> || V_is_ufb<g> )
-		)
+		(V_is_nfu<f> && V_is_ufs<g>) || (V_is_ufu<f> && V_is_ufs<g>)
 	>;
-*/
 
 /***********************************************************************************************************************/
 
@@ -549,58 +491,39 @@ namespace nlfs_1
                               
 	//	   func1   ,  func2     -->  func1 o func2
 
-/*
-	template<auto f, auto g> using try_compose_but_return_left_function 	= return_function<f, u_compose_u<f, g>>;
-	template<auto f, auto g> using try_compose_but_return_right_function 	= return_function<g, u_compose_u<f, g>>;
-*/
+	template<auto f, auto g>
+	using return_u_compose_opt = T_colist_Bs
+	<
+		f, g,					f, g,
+
+		S_left_is_id_keyword,			return_right_function,
+		S_right_is_id_keyword,			return_left_function,
+
+		S_left_is_id_func,			try_u_compose_s_but_return_right_function,
+		S_right_is_id_func,			try_u_compose_s_but_return_left_function,
+
+		S_is_car_func,				return_u_compose_car,
+		S_is_cdr_func,				return_u_compose_cdr,
+
+		otherwise,				return_u_compose_s
+	>;
+
+	template<auto f, auto g>
+	using return_n_compose_opt = T_colist_Bs
+	<
+		f, g,					f, g,
+
+		S_right_is_id_keyword,			return_left_function,
+
+		S_right_is_id_func,			try_n_compose_s_but_return_left_function,
+
+		S_is_car_func,				return_n_compose_car,
+		S_is_cdr_func,				return_n_compose_cdr,
+
+		otherwise,				return_n_compose_s
+	>;
 
 /***********************************************************************************************************************/
-
-/*
-	template<auto f, auto g>
-	using return_n_compose = T_colist_Bs
-	<
-		g, _na_,				f, g,
-
-		S_is_unary,				return_n_compose_u,
-
-	//	S_is_car_keyword,			return_f_car,
-	//	S_is_cdr_keyword,			return_f_cdr,
-	//	S_is_car_func,				try_compose_but_return_f_car,
-	//	S_is_cdr_func,				try_compose_but_return_f_cdr,
-	//	S_is_binary,				return_n_compose_b,
-
-		otherwise,				return_n_compose_n
-	>;
-
-	template<auto f, auto g>
-	using return_u_compose_u_opt = T_colist_Bs
-	<
-		f, g,				f, g,
-
-		S_left_is_id_keyword,		return_right_function,
-		S_right_is_id_keyword,		return_left_function,
-	//	S_left_is_id_func,		try_compose_but_return_right_function,
-	//	S_right_is_id_func,		try_compose_but_return_left_function,
-
-		otherwise,			return_u_compose_u
-	>;
-
-	template<auto f, auto g>
-	using return_u_compose = T_colist_Bs
-	<
-		g, _na_,				f, g,
-
-		S_is_unary,				return_u_compose_u_opt,
-
-	//	S_is_car_keyword,			return_f_car,
-	//	S_is_cdr_keyword,			return_f_cdr,
-	//	S_is_car_func,				try_compose_but_return_f_car,
-	//	S_is_cdr_func,				try_compose_but_return_f_cdr,
-	//	S_is_binary,				return_u_compose_b,
-
-		otherwise,				return_u_compose_n
-	>;
 
 	template<auto f, auto g>
 	using S_compose_opt = T_colist_Bs
@@ -611,57 +534,58 @@ namespace nlfs_1
 		S_right_not_a_function,			return_right_not_a_func_assertion,
 		S_not_valid_composition,		return_not_valid_composition_assertion,
 
-		S_left_out_type_not_void,		return_u_compose,
-		otherwise,				return_n_compose
+		S_left_out_type_not_void,		return_u_compose_opt,
+		otherwise,				return_n_compose_opt
 	>;
 
 	template<auto f, auto g>
 	constexpr auto V_compose_opt = V_value_S<S_compose_opt<f, g>>;
-*/
 
 /***********************************************************************************************************************/
 
 // do compose:
 
-/*
 	template<auto f, auto g>
 	using S_do_compose_opt = S_compose_opt<g, f>;
 
 	template<auto f, auto g>
 	constexpr auto V_do_compose_opt = V_value_S<S_compose_opt<g, f>>;
-*/
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
+/***********************************************************************************************************************/
 
-// binary (currying):
+// subcomposition:
 
+/***********************************************************************************************************************/
 /***********************************************************************************************************************/
 
 /*
-	template<auto f, auto g1, auto g2>
-	constexpr f_out_type<f>	V_curry_compose_VxVxV
-				(
-					f_car_in_type<g1> arg1,
-					f_cdr_in_type<g2> arg2
-				)					{ return f(g1(arg1), g2(arg2)); }
+	template<typename...> struct arg_list	{ };
+
+	template<typename, typename> struct pattern_match_subcompose;
+
+	template
+	<
+		template<typename...> class ListName1, typename... FTypes1,
+		template<typename...> class ListName2, typename... FTypes2
+	>
+	struct pattern_match_subcompose<ListName1<FTypes1...>, ListName2<FTypes2...>>
+	{
+		template<auto f, auto g, typename... GTypes>
+		static constexpr f_out_type<f> result(FTypes1... f_args1, GTypes... g_args, FTypes2... f_args2)
+		{
+			return f(f_args1..., g(g_args...), f_args2...);
+		}
+	};
 
 	template<auto f, auto g>
-	constexpr f_out_type<f>	V_curry_compose_left_VxV
-				(
-					f_car_in_type<g> arg1,
-					f_cdr_in_type<f> arg2
-				)					{ return f(g(arg1), arg2); }
+	constexpr auto V_subcompose_opt = pattern_match_subcompose
+	<
+		arg_list1, arg_list2, arg_list3
 
-	template<auto f, auto g>
-	constexpr f_out_type<f> V_curry_compose_right_VxV
-				(
-					f_car_in_type<f> arg1,
-					f_cdr_in_type<g> arg2
-				)					{ return f(arg1, g(arg2)); }
+	>::template result<f, g>;
 */
-
-/***********************************************************************************************************************/
 
 /***********************************************************************************************************************/
 
@@ -672,59 +596,6 @@ namespace nlfs_1
 	//	cdr<T1> , func1 , func2  -->  func2
 
 	//	func0   , func1 , func2  -->  func0 ( func1 , func2 )
-
-/*
-	template<auto f>
-	struct dispatch_curry_composition_opt
-	{
-		template<auto g1, auto g2> using return_binary_function		= S_value_V<f>;
-		template<auto g1, auto g2> using return_curry_compose_left	= S_value_V<V_curry_compose_left_VxV<f, g1>>;
-		template<auto g1, auto g2> using return_curry_compose_right	= S_value_V<V_curry_compose_right_VxV<f, g2>>;
-		template<auto g1, auto g2> using return_curry_compose		= S_value_V<V_curry_compose_VxVxV<f, g1, g2>>;
-
-		template<auto g1, auto g2>
-		using result = T_colist_Bs
-		<
-			g1, g2,					g1, g2,
-
-			S_both_are_id_keyword_or_func,		return_binary_function,
-			S_left_is_id_keyword_or_func,		return_curry_compose_right,
-			S_right_is_id_keyword_or_func,		return_curry_compose_left,
-			otherwise,				return_curry_compose
-		>;
-	};
-
-	template<auto f>
-	struct try_curry_but_dispatch_left_function
-	{
-		template<auto g1, auto g2>
-		using result = return_function<g1, V_curry_compose_VxVxV<f, g1, g2>>;
-	};
-
-	template<auto f>
-	struct try_curry_but_dispatch_right_function
-	{
-		template<auto g1, auto g2>
-		using result = return_function<g2, V_curry_compose_VxVxV<f, g1, g2>>;
-	};
-
-	template<auto f, auto g1, auto g2>
-	using S_curry_compose_opt = T_colist_Bs
-	<
-		f, _na_,			g1, g2,
-
-		S_is_car_keyword,		return_left_function,
-		S_is_cdr_keyword,		return_right_function,
-
-		S_is_car_func,			try_curry_but_dispatch_left_function<f>::template result,
-		S_is_cdr_func,			try_curry_but_dispatch_right_function<f>::template result,
-
-		otherwise,			dispatch_curry_composition_opt<f>::template result
-	>;
-
-	template<auto f, auto g1, auto g2>
-	constexpr auto V_curry_compose_opt = V_value_S<S_curry_compose_opt<f, g1, g2>>;
-*/
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/

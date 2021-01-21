@@ -20,18 +20,26 @@
 // template metaprogramming:
 
 /*
-	S - value_pair					(typename)
-	T - type					(typename)
-	U - type_map					(constexpr auto)
-	V - value					(constexpr auto)
+	S   - value_pair				(typename)
+	T   - type					(typename)
+	U   - type_map					(constexpr auto)
+	V   - value					(constexpr auto)
 
-	G - template<typename> class
-	F - template<auto> class
+	G   - template<typename> class
+	F   - template<auto> class
 
-	E - template<typename, typename> class
-	D - template<typename, auto> class
-	C - template<auto, typename> class
-	B - template<auto, auto> class
+	E   - template<typename, typename> class
+	D   - template<typename, auto> class
+	C   - template<auto, typename> class
+	B   - template<auto, auto> class
+
+
+	opt - optimizer
+
+	n   - nullary
+	u   - unary
+	b   - binary
+	s   - variadic
 */
 
 /***********************************************************************************************************************/
@@ -80,6 +88,16 @@ namespace nlfs_0
 
 	template<typename ValuePair>
 	constexpr auto V_value_S = ValuePair::value;
+
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+/***********************************************************************************************************************/
+
+// debugging:
+
+/***********************************************************************************************************************/
+
+	template<typename Type> using force_static_assert	= S_value_V<Type::template result<false>()>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -467,11 +485,11 @@ namespace nlfs_0
 		<
 			template
 			<
-				bool, auto, typename, typename...
+				bool, auto, auto, typename, typename...
 
 			> class Continuation
 		>
-		using induct = Continuation<false, _na_, _NA_>;
+		using induct = Continuation<false, _na_, _na_, _NA_>;
 	};
 
 	template<typename OutType, typename... InTypes, OutType(*f)(InTypes...), auto NA>
@@ -481,11 +499,11 @@ namespace nlfs_0
 		<
 			template
 			<
-				bool, auto, typename, typename...
+				bool, auto, auto, typename, typename...
 
 			> class Continuation, auto count, typename... Args
 		>
-		using induct = Continuation<true, count, Args..., OutType, InTypes...>;
+		using induct = Continuation<true, f, count, Args..., OutType, InTypes...>;
 	};
 
 	//
@@ -499,7 +517,7 @@ namespace nlfs_0
 
 // match:
 
-	template<bool Match, auto, typename, typename...>
+	template<bool Match, auto, auto, typename, typename...>
 	using func_is_match_cont = S_value_V<Match>;
 
 	template<auto f, auto = _na_>
@@ -515,7 +533,7 @@ namespace nlfs_0
 
 // not match:
 
-	template<bool Match, auto, typename, typename...>
+	template<bool Match, auto, auto, typename, typename...>
 	using func_not_match_cont = S_value_V<!Match>;
 
 	template<auto f, auto = _na_>
@@ -531,7 +549,7 @@ namespace nlfs_0
 
 // arity:
 
-	template<bool, auto, typename Type, typename, typename... InTypes>
+	template<bool, auto, auto, typename Type, typename, typename... InTypes>
 	using func_arity_cont = S_value_V<Type(sizeof...(InTypes))>;
 
 	template<auto f, typename SizeType = unsigned>
@@ -545,7 +563,7 @@ namespace nlfs_0
 
 // is nullary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_is_nullary_cont = S_value_V<!bool(sizeof...(InTypes))>;
 
 	template<auto f, auto = _na_>
@@ -561,7 +579,7 @@ namespace nlfs_0
 
 // not nullary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_not_nullary_cont = S_value_V<bool(sizeof...(InTypes))>;
 
 	template<auto f, auto = _na_>
@@ -577,7 +595,7 @@ namespace nlfs_0
 
 // is unary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_is_unary_cont = S_value_V<sizeof...(InTypes) == 1>;
 
 	template<auto f, auto = _na_>
@@ -593,7 +611,7 @@ namespace nlfs_0
 
 // not unary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_not_unary_cont = S_value_V<sizeof...(InTypes) != 1>;
 
 	template<auto f, auto = _na_>
@@ -609,7 +627,7 @@ namespace nlfs_0
 
 // is binary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_is_binary_cont = S_value_V<sizeof...(InTypes) == 2>;
 
 	template<auto f, auto = _na_>
@@ -625,7 +643,7 @@ namespace nlfs_0
 
 // not binary:
 
-	template<bool, auto, typename, typename... InTypes>
+	template<bool, auto, auto, typename, typename... InTypes>
 	using func_not_binary_cont = S_value_V<sizeof...(InTypes) != 2>;
 
 	template<auto f, auto = _na_>
@@ -641,7 +659,7 @@ namespace nlfs_0
 
 // out type:
 
-	template<bool, auto, typename OutType, typename...>
+	template<bool, auto, auto, typename OutType, typename...>
 	using func_out_type_cont = OutType;
 
 	template<auto f, auto = _na_>
@@ -649,6 +667,14 @@ namespace nlfs_0
 	<
 		func_out_type_cont, _na_
 	>;
+
+	// (convenience alias):
+
+		template<auto f, auto = _na_>
+		using f_out_type = typename pattern_match_function<f>::template induct
+		<
+			func_out_type_cont, _na_
+		>;
 
 // in type:
 
@@ -679,7 +705,7 @@ namespace nlfs_0
 		>::template result<func_in_type_at, pos, InTypes...>;
 	};
 
-	template<bool, auto pos, typename, typename... InTypes>
+	template<bool, auto, auto pos, typename, typename... InTypes>
 	using func_in_type_cont = typename func_in_type_at::template result
 	<
 		pos, InTypes...
@@ -700,22 +726,46 @@ namespace nlfs_0
 		otherwise,			return_in_type
 	>;
 
-// (convenience aliases):
+	// (convenience alias):
 
-	template<auto f, auto = _na_>
-	using f_out_type = typename pattern_match_function<f>::template induct
-	<
-		func_out_type_cont, _na_
-	>;
+		template<auto f, auto pos = 0>
+		using f_in_type = T_colist_Bs
+		<
+			f, _na_,			f, pos,
 
-	template<auto f, auto pos = 0>
-	using f_in_type = T_colist_Bs
-	<
-		f, _na_,			f, pos,
+			S_is_nullary_function,		return_void,
+			otherwise,			return_in_type
+		>;
 
-		S_is_nullary_function,		return_void,
-		otherwise,			return_in_type
-	>;
+// composition:
+
+	// n,s:
+
+		template<auto f, auto g, typename... Types>
+		constexpr void n_compose_s(Types... args) { f(g(args...)); }
+
+		template<bool, auto g, auto f, typename, typename... InTypes>
+		using func_n_compose_s_cont = S_value_V<n_compose_s<f, g, InTypes...>>;
+
+		template<auto f, auto g>
+		using return_n_compose_s = typename pattern_match_function<g>::template induct
+		<
+			func_n_compose_s_cont, f
+		>;
+
+	// u,s:
+
+		template<auto f, auto g, typename... Types>
+		constexpr f_out_type<f> u_compose_s(Types... args) { return f(g(args...)); }
+
+		template<bool, auto g, auto f, typename, typename... InTypes>
+		using func_u_compose_s_cont = S_value_V<u_compose_s<f, g, InTypes...>>;
+
+		template<auto f, auto g>
+		using return_u_compose_s = typename pattern_match_function<g>::template induct
+		<
+			func_u_compose_s_cont, f
+		>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
@@ -895,16 +945,6 @@ namespace nlfs_0
 	//
 
 	template<auto Type> constexpr bool V_equals_char_ptr			= V_equal_UxU<Type, U_char_ptr>;
-
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-/***********************************************************************************************************************/
-
-// debugging:
-
-/***********************************************************************************************************************/
-
-	template<typename Type> using force_static_assert	= S_value_V<Type::template result<false>()>;
 
 /***********************************************************************************************************************/
 /***********************************************************************************************************************/
